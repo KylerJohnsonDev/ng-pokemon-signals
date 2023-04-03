@@ -1,1 +1,12 @@
 /* You can add global styles to this file, and also import other style files */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+.router-link-active {
+  text-decoration: underline;
+}
+
+.app-input {
+  @apply shadow appearance-none border border-black rounded w-full py-2 px-3 text-white bg-gray-500 mb-3 leading-tight focus:outline-blue-500;
+}
