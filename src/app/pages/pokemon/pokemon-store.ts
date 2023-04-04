@@ -50,7 +50,6 @@ export class PokemonStore {
           return response.json();
         })
       );
-      console.log(typeInfoCollection);
 
       let goodAgainst: Type2[] = [];
       let badAgainst: Type2[] = [];
