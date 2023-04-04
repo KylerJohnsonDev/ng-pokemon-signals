@@ -1,32 +1,74 @@
-import { Injectable, signal, Signal, effect, computed } from '@angular/core';
-import { Pokemon } from './pokemon.model';
+import { Injectable, computed, effect, signal } from '@angular/core';
+import { Pokemon, Type, Type2, TypeInformation } from './pokemon.model';
 
 @Injectable({
   providedIn: 'root',
 })
 export class PokemonStore {
   private readonly pokemonSpriteUri = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon`;
-  private readonly pokeApiUrl = `https://pokeapi.co/api/v2/pokemon`;
+  private readonly pokeApiUrl = `https://pokeapi.co/api/v2`;
 
   readonly pokemonNumber = signal<number>(1);
   readonly pokemon = signal<Pokemon | null>(null);
   readonly pokemonImageUrl = computed(
     () => `${this.pokemonSpriteUri}/${this.pokemon()?.id}.png`
   );
+  readonly goodAgainst = signal<Type2[]>([]);
+  readonly badAgainst = signal<Type2[]>([]);
 
   constructor() {
     effect(() => {
       this.fetchPokemon(this.pokemonNumber());
+    });
+
+    effect(() => {
+      if (this.pokemon()) {
+        this.fetchTypeInfo(this.pokemon()?.types);
+      }
     });
   }
 
   async fetchPokemon(pokemonNumber: number | null): Promise<void> {
     if (!pokemonNumber) return this.pokemon.set(null);
 
-    const res = await fetch(`${this.pokeApiUrl}/${pokemonNumber}`);
+    const res = await fetch(`${this.pokeApiUrl}/pokemon/${pokemonNumber}`);
     const pokemon = await res.json();
     this.pokemon.set(pokemon);
-    this.pokemon;
+  }
+
+  async fetchTypeInfo(types: readonly Type[] | undefined): Promise<void> {
+    if (!types) {
+      this.goodAgainst.set([]);
+      this.badAgainst.set([]);
+    } else {
+      const requestsToMake = types.map((type: Type) => {
+        return fetch(`${this.pokeApiUrl}/type/${type.type.name}`);
+      });
+      const responses = await Promise.all(requestsToMake);
+      const typeInfoCollection: TypeInformation[] = await Promise.all(
+        responses.map((response) => {
+          return response.json();
+        })
+      );
+      console.log(typeInfoCollection);
+
+      let goodAgainst: Type2[] = [];
+      let badAgainst: Type2[] = [];
+
+      typeInfoCollection.forEach((typeInfo) => {
+        goodAgainst = [
+          ...goodAgainst,
+          ...typeInfo.damage_relations.double_damage_to,
+        ];
+        badAgainst = [
+          ...badAgainst,
+          ...typeInfo.damage_relations.double_damage_from,
+        ];
+      });
+
+      this.goodAgainst.set(goodAgainst);
+      this.badAgainst.set(badAgainst);
+    }
   }
 
   setPokemonNumber(num: number): void {

@@ -1,7 +1,7 @@
-import { Component, Input } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { Pokemon } from './pokemon.model';
+import { Component, Input } from '@angular/core';
 import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
+import { Pokemon } from './pokemon.model';
 
 @Component({
   selector: 'app-pokemon-detail',
