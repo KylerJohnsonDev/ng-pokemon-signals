@@ -3,10 +3,15 @@
 @tailwind components;
 @tailwind utilities;
 
+html,
+body {
+  height: 100%;
+}
+
 .router-link-active {
   text-decoration: underline;
 }
 
 .app-input {
-  @apply shadow appearance-none border border-black rounded w-full py-2 px-3 text-white bg-gray-500 mb-3 leading-tight focus:outline-blue-500;
+  @apply shadow appearance-none border border-black rounded grow p-4 m-0 text-white bg-gray-500 leading-tight focus:outline-blue-500;
 }

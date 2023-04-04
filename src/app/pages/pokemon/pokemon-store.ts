@@ -9,6 +9,7 @@ export class PokemonStore {
   private readonly pokeApiUrl = `https://pokeapi.co/api/v2`;
 
   readonly pokemonNumber = signal<number>(1);
+  readonly pokemonName = signal<string>('');
   readonly pokemon = signal<Pokemon | null>(null);
   readonly pokemonImageUrl = computed(
     () => `${this.pokemonSpriteUri}/${this.pokemon()?.id}.png`
@@ -22,16 +23,24 @@ export class PokemonStore {
     });
 
     effect(() => {
+      this.fetchPokemon(this.pokemonName());
+    });
+
+    effect(() => {
       if (this.pokemon()) {
         this.fetchTypeInfo(this.pokemon()?.types);
       }
     });
   }
 
-  async fetchPokemon(pokemonNumber: number | null): Promise<void> {
-    if (!pokemonNumber) return this.pokemon.set(null);
+  async fetchPokemon(
+    pokemonNameOrNumber: number | string | null
+  ): Promise<void> {
+    if (!pokemonNameOrNumber) return this.pokemon.set(null);
 
-    const res = await fetch(`${this.pokeApiUrl}/pokemon/${pokemonNumber}`);
+    const res = await fetch(
+      `${this.pokeApiUrl}/pokemon/${pokemonNameOrNumber}`
+    );
     const pokemon = await res.json();
     this.pokemon.set(pokemon);
   }
