@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, Input } from '@angular/core';
 import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
-import { Pokemon } from './pokemon.model';
+import { Pokemon, Type2 } from './pokemon.model';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -19,7 +19,7 @@ import { Pokemon } from './pokemon.model';
         height="200"
       />
     </section>
-    <section class="flex flex-col">
+    <section class="flex flex-col gap-4">
       <h1 class="text-2xl capitalize mb-2">
         {{ pokemon?.name }}
       </h1>
@@ -28,9 +28,31 @@ import { Pokemon } from './pokemon.model';
         <ng-container *ngFor="let item of pokemon?.types">
           <span
             class="px-3 py-1 rounded-2xl text-white ml-2 font-bold"
-            *ngIf="item | pokemonTypeLookup as type"
+            *ngIf="item.type | pokemonTypeLookup as type"
             [ngStyle]="{ 'background-color': type.color }"
             >{{ type.label }}</span
+          >
+        </ng-container>
+      </p>
+      <p>
+        Good Against:
+        <ng-container *ngFor="let type of goodAgainst">
+          <span
+            class="px-3 py-1 rounded-2xl text-white ml-2 font-bold"
+            *ngIf="type | pokemonTypeLookup as chipInfo"
+            [ngStyle]="{ 'background-color': chipInfo.color }"
+            >{{ chipInfo.label }}</span
+          >
+        </ng-container>
+      </p>
+      <p>
+        Bad Against:
+        <ng-container *ngFor="let type of badAgainst">
+          <span
+            class="px-3 py-1 rounded-2xl text-white ml-2 font-bold"
+            *ngIf="type | pokemonTypeLookup as chipInfo"
+            [ngStyle]="{ 'background-color': chipInfo.color }"
+            >{{ chipInfo.label }}</span
           >
         </ng-container>
       </p>
@@ -39,5 +61,7 @@ import { Pokemon } from './pokemon.model';
 })
 export class PokemonDetailComponent {
   @Input() pokemon!: Pokemon | null;
+  @Input() goodAgainst!: Type2[];
+  @Input() badAgainst!: Type2[];
   @Input() pokeImageUrl!: string | null;
 }

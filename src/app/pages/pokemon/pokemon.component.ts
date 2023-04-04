@@ -14,6 +14,8 @@ import { PokemonStore } from './pokemon-store';
       class="m-4"
       *ngIf="pokemonStore.pokemon()"
       [pokemon]="pokemonStore.pokemon()"
+      [goodAgainst]="pokemonStore.goodAgainst()"
+      [badAgainst]="pokemonStore.badAgainst()"
       [pokeImageUrl]="pokemonStore.pokemonImageUrl()"
     ></app-pokemon-detail>
     <section class="flex flex-row mb-4 w-72 gap-2 mx-4">

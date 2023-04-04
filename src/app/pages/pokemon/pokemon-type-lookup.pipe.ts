@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Type, TypeChipDefinition } from './pokemon.model';
+import { Type2, TypeChipDefinition } from './pokemon.model';
 
 const pokemonTypeColorsMap = new Map<string, TypeChipDefinition>([
   ['normal', { label: 'Normal', color: '#A8A77A' }],
@@ -27,11 +27,11 @@ const pokemonTypeColorsMap = new Map<string, TypeChipDefinition>([
   standalone: true,
 })
 export class PokemonTypeLookupPipe implements PipeTransform {
-  transform(type: Type | null | undefined): TypeChipDefinition {
+  transform(type: Type2 | null | undefined): TypeChipDefinition {
     const unknown: TypeChipDefinition = { label: 'Uknown', color: '#A8A77A' };
-    if (!type?.type.name) unknown;
+    if (!type?.name) unknown;
 
-    const typeChipDef = pokemonTypeColorsMap.get(String(type?.type.name));
+    const typeChipDef = pokemonTypeColorsMap.get(String(type?.name));
     return typeChipDef ? typeChipDef : unknown;
   }
 }
