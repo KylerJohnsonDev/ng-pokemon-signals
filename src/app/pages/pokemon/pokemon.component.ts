@@ -23,7 +23,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
       </section>
       <app-pokemon-detail class="m-4"></app-pokemon-detail>
     </main>
-    <footer class="flex flex-row lg:hidden bg-white gap-0.5">
+    <footer class="flex flex-row lg:hidden bg-white gap-px">
       <button
         class="font-bold grow py-2 px-4 bg-blue-500"
         (click)="onPrevious()"
