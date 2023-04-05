@@ -2,13 +2,12 @@ import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { ButtonComponent } from 'src/app/components/button.component';
+import { PokemonStore } from '../../global-state/pokemon-store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
-import { PokemonStore } from './pokemon-store';
 
 @Component({
   selector: 'app-pokemon',
   standalone: true,
-  providers: [PokemonStore],
   host: {
     class: 'flex flex-col grow',
   },
@@ -16,49 +15,13 @@ import { PokemonStore } from './pokemon-store';
     <main class="grow overflow-auto">
       <section class="lg:hidden flex flex-row m-4">
         <input
-          class="app-input grow"
+          class="app-input bg-gray-600 text-white grow"
           type="text"
-          placeholder="Enter a Pokemon"
-          [(ngModel)]="pokemonNameInputValue"
-          (keyup.enter)="onEnter()"
+          placeholder="Type a Pokemon and press enter"
+          (keyup.enter)="onEnter($event)"
         />
       </section>
-      <app-pokemon-detail
-        class="m-4"
-        *ngIf="pokemonStore.pokemon()"
-        [pokemon]="pokemonStore.pokemon()"
-        [goodAgainst]="pokemonStore.goodAgainst()"
-        [badAgainst]="pokemonStore.badAgainst()"
-        [pokeImageUrl]="pokemonStore.pokemonImageUrl()"
-      ></app-pokemon-detail>
-      <section class="hidden lg:flex flex-row mb-4 lg:w-72 gap-2 mx-4">
-        <app-button
-          text="Previous"
-          (click)="
-            pokemonStore.setPokemonNumber(pokemonStore.pokemonNumber() - 1)
-          "
-        ></app-button>
-        <app-button
-          text="Next"
-          (click)="
-            pokemonStore.setPokemonNumber(pokemonStore.pokemonNumber() + 1)
-          "
-        >
-        </app-button>
-        <app-button
-          text="Reset"
-          (click)="pokemonStore.setPokemonNumber(1)"
-        ></app-button>
-      </section>
-      <section class="hidden lg:flex w-72 flex-row m-4">
-        <input
-          class="app-input grow"
-          type="text"
-          placeholder="Enter a Pokemon"
-          [(ngModel)]="pokemonNameInputValue"
-          (keyup.enter)="onEnter()"
-        />
-      </section>
+      <app-pokemon-detail class="m-4"></app-pokemon-detail>
     </main>
     <footer class="flex flex-row lg:hidden bg-white gap-0.5">
       <button
@@ -78,11 +41,11 @@ import { PokemonStore } from './pokemon-store';
   imports: [CommonModule, ButtonComponent, PokemonDetailComponent, FormsModule],
 })
 export class PokemonComponent {
-  pokemonNameInputValue: string = '';
   constructor(public pokemonStore: PokemonStore) {}
 
-  onEnter(): void {
-    this.pokemonStore.pokemonName.set(this.pokemonNameInputValue);
+  onEnter(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.pokemonStore.pokemonName.set(input.value);
   }
 
   onPrevious(): void {

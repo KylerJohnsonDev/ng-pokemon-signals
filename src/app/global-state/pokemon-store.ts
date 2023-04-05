@@ -1,5 +1,10 @@
 import { Injectable, computed, effect, signal } from '@angular/core';
-import { Pokemon, Type, Type2, TypeInformation } from './pokemon.model';
+import {
+  Pokemon,
+  Type,
+  Type2,
+  TypeInformation,
+} from '../pages/pokemon/pokemon.model';
 
 @Injectable({
   providedIn: 'root',
@@ -19,11 +24,11 @@ export class PokemonStore {
 
   constructor() {
     effect(() => {
-      this.fetchPokemon(this.pokemonNumber());
+      this.fetchPokemonById(this.pokemonNumber());
     });
 
     effect(() => {
-      this.fetchPokemon(this.pokemonName());
+      this.fetchPokemonByName(this.pokemonName());
     });
 
     effect(() => {
@@ -33,16 +38,19 @@ export class PokemonStore {
     });
   }
 
-  async fetchPokemon(
-    pokemonNameOrNumber: number | string | null
-  ): Promise<void> {
-    if (!pokemonNameOrNumber) return this.pokemon.set(null);
-
-    const res = await fetch(
-      `${this.pokeApiUrl}/pokemon/${pokemonNameOrNumber}`
-    );
+  async fetchPokemonById(id: number): Promise<void> {
+    if (!id) return this.pokemon.set(null);
+    const res = await fetch(`${this.pokeApiUrl}/pokemon/${id}`);
     const pokemon = await res.json();
     this.pokemon.set(pokemon);
+  }
+
+  async fetchPokemonByName(name: string): Promise<void> {
+    if (!name) return this.pokemon.set(null);
+    const res = await fetch(`${this.pokeApiUrl}/pokemon/${name.toLowerCase()}`);
+    const pokemon = await res.json();
+    this.pokemon.set(pokemon);
+    this.pokemonNumber.set(pokemon.id);
   }
 
   async fetchTypeInfo(types: readonly Type[] | undefined): Promise<void> {

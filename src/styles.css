@@ -13,5 +13,5 @@ body {
 }
 
 .app-input {
-  @apply shadow appearance-none border border-black rounded grow p-4 m-0 text-white bg-gray-500 leading-tight focus:outline-blue-500;
+  @apply shadow appearance-none rounded grow p-4 m-0 leading-tight focus:outline-none;
 }

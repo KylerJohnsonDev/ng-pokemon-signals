@@ -8,7 +8,7 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
   template: `
     <button
       type="button"
-      class="bg-gray-300 hover:bg-gray-400 rounded text-gray-800 font-bold py-2 px-4"
+      class="bg-blue-500 hover:bg-blue-600 rounded text-white font-bold py-2 px-4"
       (click)="onClick($event)"
     >
       {{ text }}

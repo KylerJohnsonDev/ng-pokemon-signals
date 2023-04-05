@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonComponent } from './components/button.component';
+import { PokemonStore } from './global-state/pokemon-store';
 
 @Component({
   selector: 'app-root',
   standalone: true,
   imports: [RouterModule, ButtonComponent],
+  providers: [],
   host: {
     class: 'flex flex-col h-full',
   },
@@ -15,17 +17,25 @@ import { ButtonComponent } from './components/button.component';
         <img class="h-16" src="/assets/pokemon.png" alt="Pokemon" />
       </a>
       <div class="grow"></div>
-      <ul class="flex">
-        <li class="mr-2">
-          <a routerLink="/pokemon" routerLinkActive="router-link-active"
-            >Pokemon</a
-          >
-        </li>
-      </ul>
+      <section class="hidden lg:flex w-72 flex-row m-4">
+        <input
+          class="app-input text-white placeholder:text-gray-300 bg-blue-500 grow"
+          type="text"
+          placeholder="Type a Pokemon and press enter"
+          (keyup.enter)="onEnter($event)"
+        />
+      </section>
     </nav>
     <main class="flex grow overflow-auto">
       <router-outlet></router-outlet>
     </main>
   `,
 })
-export class AppComponent {}
+export class AppComponent {
+  constructor(public pokemonStore: PokemonStore) {}
+
+  onEnter(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.pokemonStore.pokemonName.set(input.value);
+  }
+}
