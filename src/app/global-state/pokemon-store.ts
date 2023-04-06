@@ -1,4 +1,4 @@
-import { Injectable, computed, effect, signal } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import {
   Pokemon,
   Type,
@@ -10,15 +10,11 @@ import {
   providedIn: 'root',
 })
 export class PokemonStore {
-  private readonly pokemonSpriteUri = `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon`;
   private readonly pokeApiUrl = `https://pokeapi.co/api/v2`;
 
   readonly pokemonNumber = signal<number>(1);
   readonly pokemonName = signal<string>('');
   readonly pokemon = signal<Pokemon | null>(null);
-  readonly pokemonImageUrl = computed(
-    () => `${this.pokemonSpriteUri}/${this.pokemon()?.id}.png`
-  );
   readonly goodAgainst = signal<Type2[]>([]);
   readonly badAgainst = signal<Type2[]>([]);
 
