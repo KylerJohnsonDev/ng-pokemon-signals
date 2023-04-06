@@ -18,7 +18,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
           class="app-input bg-gray-600 text-white grow"
           type="text"
           placeholder="Type a Pokemon and press enter"
-          (keyup.enter)="onEnter($event)"
+          (keydown.enter)="onEnter($event)"
         />
       </section>
       <app-pokemon-detail class="m-4"></app-pokemon-detail>
