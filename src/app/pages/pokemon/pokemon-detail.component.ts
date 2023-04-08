@@ -14,7 +14,7 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
   template: `
     <section class="flex flex-col items-center">
       <img
-        class="h-48 lg:h-full"
+        class="h-48 lg:h-96"
         [src]="pokemonStore.pokemon()?.sprites?.other?.['official-artwork']?.front_default"
         [alt]="pokemonStore.pokemon()?.name"
       />

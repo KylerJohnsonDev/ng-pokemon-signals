@@ -19,6 +19,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
           type="text"
           placeholder="Type a Pokemon and press enter"
           [(ngModel)]="searchInput"
+          (keydown.enter)="searchForPokemon(searchInput)"
         />
         <button
           type="button"

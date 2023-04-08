@@ -2,11 +2,12 @@ import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonComponent } from './components/button.component';
 import { PokemonStore } from './global-state/pokemon-store';
+import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, ButtonComponent],
+  imports: [RouterModule, ButtonComponent, FormsModule],
   providers: [],
   host: {
     class: 'flex flex-col h-full',
@@ -19,11 +20,19 @@ import { PokemonStore } from './global-state/pokemon-store';
       <div class="grow"></div>
       <section class="hidden lg:flex w-72 flex-row m-4">
         <input
-          class="app-input text-white placeholder:text-gray-300 bg-blue-500 grow"
+          class="app-input rounded-l text-white placeholder:text-gray-300 bg-blue-500 grow"
           type="text"
           placeholder="Type a Pokemon and press enter"
-          (keyup.enter)="onEnter($event)"
+          [(ngModel)]="searchInput"
+          (keydown.enter)="searchForPokemon(searchInput)"
         />
+        <button
+          type="button"
+          class="px-6 bg-green-500 hover:bg-green-600 rounded-r"
+          (click)="searchForPokemon(searchInput)"
+        >
+          Go
+        </button>
       </section>
     </nav>
     <main class="flex grow overflow-auto">
@@ -32,10 +41,11 @@ import { PokemonStore } from './global-state/pokemon-store';
   `,
 })
 export class AppComponent {
+  searchInput = '';
   constructor(public pokemonStore: PokemonStore) {}
 
-  onEnter(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.pokemonStore.pokemonName.set(input.value);
+  searchForPokemon(searchInput: string): void {
+    if (searchInput.length < 1) return;
+    this.pokemonStore.pokemonName.set(searchInput);
   }
 }
