@@ -64,22 +64,23 @@ export class PokemonStore {
         })
       );
 
-      let goodAgainst: Type2[] = [];
-      let badAgainst: Type2[] = [];
+      let goodAgainst = new Map<string, Type2>();
+      let badAgainst = new Map<string, Type2>();
 
       typeInfoCollection.forEach((typeInfo) => {
-        goodAgainst = [
-          ...goodAgainst,
-          ...typeInfo.damage_relations.double_damage_to,
-        ];
-        badAgainst = [
-          ...badAgainst,
-          ...typeInfo.damage_relations.double_damage_from,
-        ];
+        typeInfo.damage_relations.double_damage_to.forEach((type) => {
+          if (goodAgainst.has(type.name)) return;
+          goodAgainst.set(type.name, type);
+        });
+
+        typeInfo.damage_relations.double_damage_from.forEach((type) => {
+          if (badAgainst.has(type.name)) return;
+          badAgainst.set(type.name, type);
+        });
       });
 
-      this.goodAgainst.set(goodAgainst);
-      this.badAgainst.set(badAgainst);
+      this.goodAgainst.set(Array.from(goodAgainst.values()));
+      this.badAgainst.set(Array.from(badAgainst.values()));
     }
   }
 
