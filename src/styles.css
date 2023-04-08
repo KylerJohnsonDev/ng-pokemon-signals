@@ -13,5 +13,5 @@ body {
 }
 
 .app-input {
-  @apply shadow appearance-none rounded grow p-4 m-0 leading-tight focus:outline-none;
+  @apply shadow appearance-none grow p-4 m-0 leading-tight focus:outline-none;
 }

@@ -15,11 +15,18 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
     <main class="grow overflow-auto">
       <section class="lg:hidden flex flex-row m-4">
         <input
-          class="app-input bg-gray-600 text-white grow"
+          class="app-input rounded-l bg-gray-600 text-white grow"
           type="text"
           placeholder="Type a Pokemon and press enter"
-          (keydown.enter)="onEnter($event)"
+          [(ngModel)]="searchInput"
         />
+        <button
+          type="button"
+          class="px-6 bg-blue-500 rounded-r"
+          (click)="searchForPokemon(searchInput)"
+        >
+          Go
+        </button>
       </section>
       <app-pokemon-detail class="m-4"></app-pokemon-detail>
     </main>
@@ -41,11 +48,12 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
   imports: [CommonModule, ButtonComponent, PokemonDetailComponent, FormsModule],
 })
 export class PokemonComponent {
+  searchInput = '';
   constructor(public pokemonStore: PokemonStore) {}
 
-  onEnter(event: Event): void {
-    const input = event.target as HTMLInputElement;
-    this.pokemonStore.pokemonName.set(input.value);
+  searchForPokemon(searchInput: string): void {
+    if (searchInput.length < 1) return;
+    this.pokemonStore.pokemonName.set(searchInput);
   }
 
   onPrevious(): void {
