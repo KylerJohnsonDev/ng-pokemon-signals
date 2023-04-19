@@ -1,4 +1,4 @@
-import { Injectable, effect, signal } from '@angular/core';
+import { Injectable, effect, signal, computed } from '@angular/core';
 import {
   Pokemon,
   Type,
@@ -6,53 +6,72 @@ import {
   TypeInformation,
 } from '../pages/pokemon/pokemon.model';
 
+interface PokemonState {
+  pokemonId: number;
+  pokemonName: string;
+  pokemon: Pokemon | null;
+  goodAgainst: Type2[];
+  badAgainst: Type2[];
+}
+
+const initialPokemonState: PokemonState = {
+  pokemonId: 1,
+  pokemonName: '',
+  pokemon: null,
+  goodAgainst: [],
+  badAgainst: [],
+};
+
 @Injectable({
   providedIn: 'root',
 })
 export class PokemonStore {
   private readonly pokeApiUrl = `https://pokeapi.co/api/v2`;
 
-  readonly pokemonNumber = signal<number>(1);
-  readonly pokemonName = signal<string>('');
-  readonly pokemon = signal<Pokemon | null>(null);
-  readonly goodAgainst = signal<Type2[]>([]);
-  readonly badAgainst = signal<Type2[]>([]);
+  readonly state = signal<PokemonState>(initialPokemonState);
+  readonly pokemonId = computed(() => this.state().pokemonId);
+  readonly pokemonName = computed(() => this.state().pokemonName);
+  readonly pokemon = computed(() => this.state().pokemon);
 
-  constructor() {
-    effect(() => {
-      this.fetchPokemonById(this.pokemonNumber());
-    });
+  private pokemonNumberEffectRef = effect(
+    () => this.fetchPokemonByRouteParam(this.pokemonId()),
+    { allowSignalWrites: true }
+  );
 
-    effect(() => {
-      this.fetchPokemonByName(this.pokemonName());
-    });
+  private pokemonNameEffectRef = effect(
+    () => this.fetchPokemonByRouteParam(this.pokemonName()),
+    { allowSignalWrites: true }
+  );
 
-    effect(() => {
-      if (this.pokemon()) {
-        this.fetchTypeInfo(this.pokemon()?.types);
-      }
-    });
-  }
+  private pokemonEffectRef = effect(() => {
+    const pokemon = this.state().pokemon;
+    if (pokemon) {
+      this.fetchTypeInfo(pokemon.types);
+    }
+  });
 
-  async fetchPokemonById(id: number): Promise<void> {
-    if (!id) return this.pokemon.set(null);
-    const res = await fetch(`${this.pokeApiUrl}/pokemon/${id}`);
+  async fetchPokemonByRouteParam(param: number | string): Promise<void> {
+    if (typeof param === 'string' && param.length < 1)
+      return this.state.update((state) => ({ ...state, pokemon: null }));
+
+    const res = await fetch(`${this.pokeApiUrl}/pokemon/${param}`);
     const pokemon = await res.json();
-    this.pokemon.set(pokemon);
-  }
 
-  async fetchPokemonByName(name: string): Promise<void> {
-    if (!name) return this.pokemon.set(null);
-    const res = await fetch(`${this.pokeApiUrl}/pokemon/${name.toLowerCase()}`);
-    const pokemon = await res.json();
-    this.pokemon.set(pokemon);
-    this.pokemonNumber.set(pokemon.id);
+    this.state.update((state) => ({
+      ...state,
+      pokemon,
+      pokemonId: pokemon.id,
+      pokemonName: '',
+    }));
   }
 
   async fetchTypeInfo(types: readonly Type[] | undefined): Promise<void> {
     if (!types) {
-      this.goodAgainst.set([]);
-      this.badAgainst.set([]);
+      this.state.update((state) => ({
+        ...state,
+        goodAgainst: [],
+        badAgainst: [],
+      }));
     } else {
       const requestsToMake = types.map((type: Type) => {
         return fetch(`${this.pokeApiUrl}/type/${type.type.name}`);
@@ -78,14 +97,20 @@ export class PokemonStore {
           badAgainst.set(type.name, type);
         });
       });
-
-      this.goodAgainst.set(Array.from(goodAgainst.values()));
-      this.badAgainst.set(Array.from(badAgainst.values()));
+      this.state.update((state) => ({
+        ...state,
+        goodAgainst: Array.from(goodAgainst.values()),
+        badAgainst: Array.from(badAgainst.values()),
+      }));
     }
   }
 
-  setPokemonNumber(num: number): void {
-    if (num < 1) return this.pokemonNumber.set(1);
-    this.pokemonNumber.set(num);
+  setPokemonId(id: number): void {
+    const pokemonId = id < 1 ? 1 : id;
+    this.state.update((state) => ({ ...state, pokemonId }));
+  }
+
+  setPokemonName(pokemonName: string): void {
+    this.state.update((state) => ({ ...state, pokemonName }));
   }
 }

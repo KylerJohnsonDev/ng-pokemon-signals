@@ -8,6 +8,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
 @Component({
   selector: 'app-pokemon',
   standalone: true,
+  // signals: true,
   host: {
     class: 'flex flex-col grow',
   },
@@ -54,18 +55,18 @@ export class PokemonComponent {
 
   searchForPokemon(searchInput: string): void {
     if (searchInput.length < 1) return;
-    this.pokemonStore.pokemonName.set(searchInput);
+    this.pokemonStore.setPokemonName(searchInput);
   }
 
   onPrevious(): void {
-    this.pokemonStore.setPokemonNumber(this.pokemonStore.pokemonNumber() - 1);
+    this.pokemonStore.setPokemonId(this.pokemonStore.pokemonId() - 1);
   }
 
   onReset(): void {
-    this.pokemonStore.setPokemonNumber(1);
+    this.pokemonStore.setPokemonId(1);
   }
 
   onNext(): void {
-    this.pokemonStore.setPokemonNumber(this.pokemonStore.pokemonNumber() + 1);
+    this.pokemonStore.setPokemonId(this.pokemonStore.pokemonId() + 1);
   }
 }

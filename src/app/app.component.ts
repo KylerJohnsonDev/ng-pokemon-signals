@@ -46,6 +46,6 @@ export class AppComponent {
 
   searchForPokemon(searchInput: string): void {
     if (searchInput.length < 1) return;
-    this.pokemonStore.pokemonName.set(searchInput);
+    this.pokemonStore.setPokemonName(searchInput);
   }
 }
