@@ -55,7 +55,9 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
       <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
         <p>Good Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
-          <ng-container *ngFor="let type of pokemonStore.state().goodAgainst">
+          <ng-container
+            *ngFor="let type of pokemonStore.typeStrategyInfo().goodAgainst"
+          >
             <span
               class="px-3 py-1 rounded-2xl text-white font-bold"
               *ngIf="type | pokemonTypeLookup as chipInfo"
@@ -69,7 +71,9 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
       <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
         <p class="grow-2">Bad Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
-          <ng-container *ngFor="let type of pokemonStore.state().badAgainst">
+          <ng-container
+            *ngFor="let type of pokemonStore.typeStrategyInfo().badAgainst"
+          >
             <span
               class="px-3 py-1 rounded-2xl text-white font-bold"
               *ngIf="type | pokemonTypeLookup as chipInfo"

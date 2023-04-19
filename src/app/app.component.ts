@@ -1,13 +1,13 @@
-import { Component } from '@angular/core';
+import { Component, signal } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonComponent } from './components/button.component';
+import { SignalInputDirective } from './directives/input.directive';
 import { PokemonStore } from './global-state/pokemon-store';
-import { FormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-root',
   standalone: true,
-  imports: [RouterModule, ButtonComponent, FormsModule],
+  imports: [RouterModule, ButtonComponent, SignalInputDirective],
   providers: [],
   host: {
     class: 'flex flex-col h-full',
@@ -23,13 +23,14 @@ import { FormsModule } from '@angular/forms';
           class="app-input rounded-l text-white placeholder:text-gray-300 bg-blue-500 grow"
           type="text"
           placeholder="Type a Pokemon and press enter"
-          [(ngModel)]="searchInput"
-          (keydown.enter)="searchForPokemon(searchInput)"
+          signalInput
+          [signal]="searchInput"
+          (keydown.enter)="searchForPokemon(searchInput())"
         />
         <button
           type="button"
           class="px-6 bg-green-500 hover:bg-green-600 rounded-r"
-          (click)="searchForPokemon(searchInput)"
+          (click)="searchForPokemon(searchInput())"
         >
           Go
         </button>
@@ -41,7 +42,7 @@ import { FormsModule } from '@angular/forms';
   `,
 })
 export class AppComponent {
-  searchInput = '';
+  searchInput = signal<string>('');
   constructor(public pokemonStore: PokemonStore) {}
 
   searchForPokemon(searchInput: string): void {

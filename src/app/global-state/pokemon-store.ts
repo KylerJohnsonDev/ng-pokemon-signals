@@ -1,4 +1,4 @@
-import { Injectable, effect, signal, computed } from '@angular/core';
+import { Injectable, effect, signal } from '@angular/core';
 import {
   Pokemon,
   Type,
@@ -28,10 +28,13 @@ const initialPokemonState: PokemonState = {
 export class PokemonStore {
   private readonly pokeApiUrl = `https://pokeapi.co/api/v2`;
 
-  readonly state = signal<PokemonState>(initialPokemonState);
-  readonly pokemonId = computed(() => this.state().pokemonId);
-  readonly pokemonName = computed(() => this.state().pokemonName);
-  readonly pokemon = computed(() => this.state().pokemon);
+  readonly pokemonId = signal<number>(1);
+  readonly pokemonName = signal<string>('');
+  readonly pokemon = signal<Pokemon | null>(null);
+  readonly typeStrategyInfo = signal<{
+    goodAgainst: Type2[];
+    badAgainst: Type2[];
+  }>({ goodAgainst: [], badAgainst: [] });
 
   private pokemonNumberEffectRef = effect(
     () => this.fetchPokemonByRouteParam(this.pokemonId()),
@@ -44,34 +47,29 @@ export class PokemonStore {
   );
 
   private pokemonEffectRef = effect(() => {
-    const pokemon = this.state().pokemon;
+    const pokemon = this.pokemon();
     if (pokemon) {
       this.fetchTypeInfo(pokemon.types);
     }
   });
 
   async fetchPokemonByRouteParam(param: number | string): Promise<void> {
-    if (typeof param === 'string' && param.length < 1)
-      return this.state.update((state) => ({ ...state, pokemon: null }));
+    if (typeof param === 'string' && param.length < 1) return;
 
     const res = await fetch(`${this.pokeApiUrl}/pokemon/${param}`);
     const pokemon = await res.json();
 
-    this.state.update((state) => ({
-      ...state,
-      pokemon,
-      pokemonId: pokemon.id,
-      pokemonName: '',
-    }));
+    this.pokemonId.set(pokemon.id);
+    this.pokemon.set(pokemon);
+    this.pokemonName.set('');
   }
 
   async fetchTypeInfo(types: readonly Type[] | undefined): Promise<void> {
     if (!types) {
-      this.state.update((state) => ({
-        ...state,
+      this.typeStrategyInfo.set({
         goodAgainst: [],
         badAgainst: [],
-      }));
+      });
     } else {
       const requestsToMake = types.map((type: Type) => {
         return fetch(`${this.pokeApiUrl}/type/${type.type.name}`);
@@ -97,20 +95,19 @@ export class PokemonStore {
           badAgainst.set(type.name, type);
         });
       });
-      this.state.update((state) => ({
-        ...state,
+      this.typeStrategyInfo.set({
         goodAgainst: Array.from(goodAgainst.values()),
         badAgainst: Array.from(badAgainst.values()),
-      }));
+      });
     }
   }
 
   setPokemonId(id: number): void {
     const pokemonId = id < 1 ? 1 : id;
-    this.state.update((state) => ({ ...state, pokemonId }));
+    this.pokemonId.set(pokemonId);
   }
 
   setPokemonName(pokemonName: string): void {
-    this.state.update((state) => ({ ...state, pokemonName }));
+    this.pokemonName.set(pokemonName);
   }
 }

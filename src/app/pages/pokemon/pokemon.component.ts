@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
+import { Component, signal } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
+import { SignalInputDirective } from 'src/app/directives/input.directive';
 import { PokemonStore } from '../../global-state/pokemon-store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
 
@@ -19,13 +19,14 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
           class="app-input rounded-l bg-gray-600 text-white grow"
           type="text"
           placeholder="Type a Pokemon and press enter"
-          [(ngModel)]="searchInput"
-          (keydown.enter)="searchForPokemon(searchInput)"
+          signalInput
+          [signal]="searchInput"
+          (keydown.enter)="searchForPokemon(searchInput())"
         />
         <button
           type="button"
           class="px-6 bg-blue-500 rounded-r"
-          (click)="searchForPokemon(searchInput)"
+          (click)="searchForPokemon(searchInput())"
         >
           Go
         </button>
@@ -47,15 +48,21 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
       </button>
     </footer>
   `,
-  imports: [CommonModule, ButtonComponent, PokemonDetailComponent, FormsModule],
+  imports: [
+    CommonModule,
+    ButtonComponent,
+    PokemonDetailComponent,
+    SignalInputDirective,
+  ],
 })
 export class PokemonComponent {
-  searchInput = '';
+  searchInput = signal<string>('');
   constructor(public pokemonStore: PokemonStore) {}
 
   searchForPokemon(searchInput: string): void {
     if (searchInput.length < 1) return;
     this.pokemonStore.setPokemonName(searchInput);
+    this.searchInput.set('');
   }
 
   onPrevious(): void {
