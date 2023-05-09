@@ -18,7 +18,7 @@ import { PokemonStore } from './global-state/pokemon-store';
         <img class="h-16" src="/assets/pokemon.png" alt="Pokemon" />
       </a>
       <div class="grow"></div>
-      <section class="hidden lg:flex w-72 flex-row m-4">
+      <section class="hidden lg:flex flex-row m-4">
         <input
           class="app-input rounded-l text-white placeholder:text-gray-300 bg-blue-500 grow"
           type="text"
