@@ -1,8 +1,8 @@
 import { CommonModule } from '@angular/common';
-import { Component, signal } from '@angular/core';
+import { Component, inject, signal } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
 import { SignalInputDirective } from 'src/app/directives/input.directive';
-import { PokemonStore } from '../../global-state/pokemon-store';
+import { PokemonStore } from './pokemon.store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
 
 @Component({
@@ -14,7 +14,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
   },
   template: `
     <main class="grow overflow-auto">
-      <section class="lg:hidden flex flex-row m-4">
+      <section class="flex flex-row m-4">
         <input
           class="app-input rounded-l bg-gray-600 text-white grow"
           type="text"
@@ -40,7 +40,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
       >
         Previous
       </button>
-      <button class="font-bold grow py-2 px-4 bg-blue-500" (click)="onReset()">
+      <button class="font-bold grow py-2 px-4 bg-blue-500" (click)="pokemonStore.resetState()">
         Reset
       </button>
       <button class="font-bold grow py-2 px-4 bg-blue-500" (click)="onNext()">
@@ -57,23 +57,28 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
 })
 export class PokemonComponent {
   searchInput = signal<string>('');
-  constructor(public pokemonStore: PokemonStore) {}
+  readonly pokemonStore = inject(PokemonStore);
 
   searchForPokemon(searchInput: string): void {
     if (searchInput.length < 1) return;
-    this.pokemonStore.setPokemonName(searchInput);
+    this.pokemonStore.loadPokemonByIdentifier(searchInput);
     this.searchInput.set('');
   }
 
   onPrevious(): void {
-    this.pokemonStore.setPokemonId(this.pokemonStore.pokemonId() - 1);
+    const identifier = this.pokemonStore.currentPokemonIdentifier();
+    if(identifier > 1) {
+      const previousPokemonId = identifier - 1;
+      this.pokemonStore.loadPokemonByIdentifier(previousPokemonId)
+    }
   }
 
-  onReset(): void {
-    this.pokemonStore.setPokemonId(1);
-  }
-
-  onNext(): void {
-    this.pokemonStore.setPokemonId(this.pokemonStore.pokemonId() + 1);
+  onNext (): void {
+    const maxNumberOfPokemon = 1024;
+    const identifier = this.pokemonStore.currentPokemonIdentifier();
+    if(identifier < maxNumberOfPokemon) {
+      const nextPokemonId = identifier + 1;
+      this.pokemonStore.loadPokemonByIdentifier(nextPokemonId)
+    }
   }
 }

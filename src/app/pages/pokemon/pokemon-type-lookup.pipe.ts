@@ -27,11 +27,11 @@ const pokemonTypeColorsMap = new Map<string, TypeChipDefinition>([
   standalone: true,
 })
 export class PokemonTypeLookupPipe implements PipeTransform {
-  transform(type: Type2 | null | undefined): TypeChipDefinition {
+  transform(type: string | null | undefined): TypeChipDefinition {
     const unknown: TypeChipDefinition = { label: 'Unknown', color: '#A8A77A' };
-    if (!type?.name) unknown;
+    if (!type) unknown;
 
-    const typeChipDef = pokemonTypeColorsMap.get(String(type?.name));
+    const typeChipDef = pokemonTypeColorsMap.get(String(type));
     return typeChipDef ? typeChipDef : unknown;
   }
 }

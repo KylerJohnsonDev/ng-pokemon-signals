@@ -1,10 +1,9 @@
 import { bootstrapApplication } from '@angular/platform-browser';
 import { provideRouter } from '@angular/router';
 import { AppComponent } from './app/app.component';
-
-import { PokemonStore } from './app/global-state/pokemon-store';
 import { routes } from './routes';
+import { provideHttpClient } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
-  providers: [provideRouter(routes), PokemonStore],
+  providers: [provideRouter(routes), provideHttpClient()],
 }).catch((err) => console.error(err));

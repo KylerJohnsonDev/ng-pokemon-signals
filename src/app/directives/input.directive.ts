@@ -26,10 +26,4 @@ export class SignalInputDirective implements OnInit {
   ngOnInit(): void {
     this.inputValue = this.signal();
   }
-
-  // private onSignalChangeEffectRef = effect(() => {
-  //   if (this.signal) {
-  //     this.inputValue = this.signal();
-  //   }
-  // });
 }

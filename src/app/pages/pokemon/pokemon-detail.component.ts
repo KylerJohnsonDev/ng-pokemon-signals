@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
-import { PokemonStore } from '../../global-state/pokemon-store';
+import { PokemonStore } from './pokemon.store';
 import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
 
 @Component({
@@ -21,15 +21,15 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
       <section class="hidden lg:flex flex-row mb-4 lg:w-72 gap-2 mx-4">
         <app-button
           text="Previous"
-          (click)="pokemonStore.setPokemonId(pokemonStore.pokemonId() - 1)"
+          (click)="onPrevious()"
         ></app-button>
         <app-button
           text="Reset"
-          (click)="pokemonStore.setPokemonId(1)"
+          (click)="pokemonStore.resetState()"
         ></app-button>
         <app-button
           text="Next"
-          (click)="pokemonStore.setPokemonId(pokemonStore.pokemonId() + 1)"
+          (click)="onNext()"
         >
         </app-button>
       </section>
@@ -44,10 +44,9 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
           <ng-container *ngFor="let type of pokemonStore.pokemon()?.types">
             <span
               class="px-3 py-1 rounded-2xl text-white font-bold"
-              *ngIf="type.type | pokemonTypeLookup as chipInfo"
+              *ngIf="type.type.name | pokemonTypeLookup as chipInfo"
               [ngStyle]="{ 'background-color': chipInfo.color }"
-              >{{ chipInfo.label }}</span
-            >
+              >{{ chipInfo.label }}</span>
           </ng-container>
         </div>
       </div>
@@ -56,7 +55,7 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
         <p>Good Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
           <ng-container
-            *ngFor="let type of pokemonStore.typeStrategyInfo().goodAgainst"
+            *ngFor="let type of pokemonStore.goodAgainst()"
           >
             <span
               class="px-3 py-1 rounded-2xl text-white font-bold"
@@ -72,7 +71,7 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
         <p class="grow-2">Bad Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
           <ng-container
-            *ngFor="let type of pokemonStore.typeStrategyInfo().badAgainst"
+            *ngFor="let type of pokemonStore.badAgainst()"
           >
             <span
               class="px-3 py-1 rounded-2xl text-white font-bold"
@@ -87,5 +86,22 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
   `,
 })
 export class PokemonDetailComponent {
-  constructor(public pokemonStore: PokemonStore) {}
+  readonly pokemonStore = inject(PokemonStore);
+
+  onPrevious(): void {
+    const identifier = this.pokemonStore.currentPokemonIdentifier();
+    if(identifier > 1) {
+      const previousPokemonId = identifier - 1;
+      this.pokemonStore.loadPokemonByIdentifier(previousPokemonId)
+    }
+  }
+
+  onNext (): void {
+    const maxNumberOfPokemon = 1024;
+    const identifier = this.pokemonStore.currentPokemonIdentifier();
+    if(identifier < maxNumberOfPokemon) {
+      const nextPokemonId = identifier + 1;
+      this.pokemonStore.loadPokemonByIdentifier(nextPokemonId)
+    }
+  }
 }
