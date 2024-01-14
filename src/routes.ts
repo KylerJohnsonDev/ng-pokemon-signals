@@ -1,5 +1,5 @@
 import { Routes } from '@angular/router';
-import { PokemonComponent } from './app/pages/pokemon/pokemon.component';
+import { PokemonComponent } from './app/pages/pokemon/pokemon-page.component';
 import { PokemonStore } from './app/pages/pokemon/pokemon.store';
 
 export const routes: Routes = [

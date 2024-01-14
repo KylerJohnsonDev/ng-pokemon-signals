@@ -2,12 +2,13 @@ import { CommonModule } from '@angular/common';
 import { Component, inject } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
 import { PokemonStore } from './pokemon.store';
-import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
+import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
+import { TypePillComponent } from 'src/app/components/type-pill.component';
 
 @Component({
   selector: 'app-pokemon-detail',
   standalone: true,
-  imports: [CommonModule, PokemonTypeLookupPipe, ButtonComponent],
+  imports: [CommonModule, PokemonTypeLookupPipe, ButtonComponent, TypePillComponent],
   host: {
     class: 'flex flex-col lg:flex-row lg:items-center gap-4 p-4',
   },
@@ -41,45 +42,34 @@ import { PokemonTypeLookupPipe } from './pokemon-type-lookup.pipe';
       <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
         <p>Type:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
-          <ng-container *ngFor="let type of pokemonStore.pokemon()?.types">
-            <span
-              class="px-3 py-1 rounded-2xl text-white font-bold"
-              *ngIf="type.type.name | pokemonTypeLookup as chipInfo"
-              [ngStyle]="{ 'background-color': chipInfo.color }"
-              >{{ chipInfo.label }}</span>
-          </ng-container>
+          @for(type of pokemonStore.pokemon()?.types; track type.type.name) {
+            <app-type-pill [text]="type.type.name"></app-type-pill>
+          } 
+          @empty {
+            <span>No Data</span>
+          }
         </div>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
         <p>Good Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
-          <ng-container
-            *ngFor="let type of pokemonStore.goodAgainst()"
-          >
-            <span
-              class="px-3 py-1 rounded-2xl text-white font-bold"
-              *ngIf="type | pokemonTypeLookup as chipInfo"
-              [ngStyle]="{ 'background-color': chipInfo.color }"
-              >{{ chipInfo.label }}</span
-            >
-          </ng-container>
+          @for(type of pokemonStore.goodAgainst(); track type) {
+            <app-type-pill [text]="type"></app-type-pill>
+          } @empty {
+            <span>No Data</span>
+          }
         </div>
       </div>
 
       <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
         <p class="grow-2">Bad Against:</p>
         <div class="flex flex-row flex-wrap gap-2 max-w-full">
-          <ng-container
-            *ngFor="let type of pokemonStore.badAgainst()"
-          >
-            <span
-              class="px-3 py-1 rounded-2xl text-white font-bold"
-              *ngIf="type | pokemonTypeLookup as chipInfo"
-              [ngStyle]="{ 'background-color': chipInfo.color }"
-              >{{ chipInfo.label }}</span
-            >
-          </ng-container>
+          @for(type of pokemonStore.badAgainst(); track type) {
+            <app-type-pill [text]="type"></app-type-pill>
+          } @empty {
+            <span>No Data</span>
+          }
         </div>
       </div>
     </section>
