@@ -7,6 +7,7 @@ import {
   WritableSignal,
 } from '@angular/core';
 
+// EXPERIMENTING - with signals and directives - do not use in production app
 @Directive({
   selector: '[signalInput]',
   standalone: true,
