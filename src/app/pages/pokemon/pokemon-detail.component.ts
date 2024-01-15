@@ -32,7 +32,7 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
       <app-paginator
         [isMobile]="false"
         (previous)="onPrevious()"
-        (reset)="pokemonStore.resetState()"
+        (reset)="pokemonStore.loadPokemonByIdentifier(1)"
         (next)="onNext()"
       />
     </section>
