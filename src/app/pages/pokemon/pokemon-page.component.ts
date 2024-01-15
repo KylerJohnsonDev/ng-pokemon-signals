@@ -4,11 +4,11 @@ import { ButtonComponent } from 'src/app/components/button.component';
 import { SignalInputDirective } from 'src/app/directives/input.directive';
 import { PokemonStore } from './pokemon.store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
+import { PaginatorComponent } from 'src/app/components/paginator.component';
 
 @Component({
   selector: 'app-pokemon',
   standalone: true,
-  // signals: true,
   host: {
     class: 'flex flex-col grow',
   },
@@ -33,19 +33,13 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
       </section>
       <app-pokemon-detail class="m-4"></app-pokemon-detail>
     </main>
-    <footer class="flex flex-row lg:hidden bg-white gap-px">
-      <button
-        class="font-bold grow py-2 px-4 bg-blue-500"
-        (click)="onPrevious()"
-      >
-        Previous
-      </button>
-      <button class="font-bold grow py-2 px-4 bg-blue-500" (click)="pokemonStore.resetState()">
-        Reset
-      </button>
-      <button class="font-bold grow py-2 px-4 bg-blue-500" (click)="onNext()">
-        Next
-      </button>
+    <footer>
+      <app-paginator
+        [isMobile]="true"
+        (previous)="onPrevious()"
+        (reset)="pokemonStore.resetState()"
+        (next)="onNext()"
+      />
     </footer>
   `,
   imports: [
@@ -53,6 +47,7 @@ import { PokemonDetailComponent } from './pokemon-detail.component';
     ButtonComponent,
     PokemonDetailComponent,
     SignalInputDirective,
+    PaginatorComponent,
   ],
 })
 export class PokemonComponent {
@@ -67,18 +62,18 @@ export class PokemonComponent {
 
   onPrevious(): void {
     const identifier = this.pokemonStore.currentPokemonIdentifier();
-    if(identifier > 1) {
+    if (identifier > 1) {
       const previousPokemonId = identifier - 1;
-      this.pokemonStore.loadPokemonByIdentifier(previousPokemonId)
+      this.pokemonStore.loadPokemonByIdentifier(previousPokemonId);
     }
   }
 
-  onNext (): void {
+  onNext(): void {
     const maxNumberOfPokemon = 1024;
     const identifier = this.pokemonStore.currentPokemonIdentifier();
-    if(identifier < maxNumberOfPokemon) {
+    if (identifier < maxNumberOfPokemon) {
       const nextPokemonId = identifier + 1;
-      this.pokemonStore.loadPokemonByIdentifier(nextPokemonId)
+      this.pokemonStore.loadPokemonByIdentifier(nextPokemonId);
     }
   }
 }
