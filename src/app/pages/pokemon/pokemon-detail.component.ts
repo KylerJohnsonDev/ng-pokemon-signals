@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject } from '@angular/core';
+import { Component, HostBinding, inject } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
 import { PokemonStore } from './pokemon.store';
 import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
@@ -16,9 +16,6 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
     TypePillComponent,
     PaginatorComponent,
   ],
-  host: {
-    class: 'flex flex-col lg:flex-row lg:items-center gap-4 p-4',
-  },
   template: `
     <section class="flex flex-col items-center">
       <img
@@ -76,6 +73,8 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
   `,
 })
 export class PokemonDetailComponent {
+  @HostBinding('class') class =
+    'flex flex-col lg:flex-row lg:items-center gap-4 p-4';
   readonly pokemonStore = inject(PokemonStore);
 
   onPrevious(): void {

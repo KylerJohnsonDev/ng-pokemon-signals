@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, inject, signal } from '@angular/core';
+import { Component, HostBinding, inject, signal } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
 import { SignalInputDirective } from 'src/app/directives/input.directive';
 import { PokemonStore } from './pokemon.store';
@@ -9,9 +9,6 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
 @Component({
   selector: 'app-pokemon',
   standalone: true,
-  host: {
-    class: 'flex flex-col grow',
-  },
   template: `
     <main class="grow overflow-auto">
       <section class="flex flex-row m-4">
@@ -51,6 +48,7 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
   ],
 })
 export class PokemonComponent {
+  @HostBinding('class') class = 'flex flex-col grow';
   searchInput = signal<string>('');
   readonly pokemonStore = inject(PokemonStore);
 
