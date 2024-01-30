@@ -22,7 +22,7 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
         />
         <button
           type="button"
-          class="px-6 bg-blue-500 rounded-r"
+          class="px-6 bg-blue-500 rounded-r cursor-pointer"
           (click)="searchForPokemon(searchInput())"
         >
           Go
