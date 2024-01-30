@@ -5,12 +5,16 @@ import { SignalInputDirective } from 'src/app/directives/input.directive';
 import { PokemonStore } from './pokemon.store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
+import { ErrorBannerComponent } from 'src/app/components/error-banner.component';
 
 @Component({
   selector: 'app-pokemon',
   standalone: true,
   template: `
     <main class="grow overflow-auto">
+      @if (pokemonStore.errors().length > 0) {
+        <app-error-banner [errorMessages]="pokemonStore.errors()" />
+      }
       <section class="flex flex-row m-4">
         <input
           class="app-input rounded-l bg-gray-600 text-white grow"
@@ -45,6 +49,7 @@ import { PaginatorComponent } from 'src/app/components/paginator.component';
     PokemonDetailComponent,
     SignalInputDirective,
     PaginatorComponent,
+    ErrorBannerComponent,
   ],
 })
 export class PokemonComponent {

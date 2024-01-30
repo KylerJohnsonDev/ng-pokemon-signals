@@ -10,14 +10,18 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Pokemon, TypeInformation } from './pokemon.model';
 import { computed, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
-import { forkJoin, map, pipe, switchMap, tap } from 'rxjs';
+import { EMPTY, catchError, forkJoin, map, pipe, switchMap, tap } from 'rxjs';
 import { getUniqueGoodAgainstBadAgainstTypes } from './pokemon-utils';
+import { tapResponse } from '@ngrx/operators';
+import { HttpErrorResponse } from '@angular/common/http';
 
 interface PokemonState {
   isLoading: boolean;
   pokemon: Pokemon | undefined;
   goodAgainst: string[];
   badAgainst: string[];
+  loadPokemonError: string | undefined;
+  loadTypesError: string | undefined;
 }
 
 const initialPokemonState: PokemonState = {
@@ -25,12 +29,24 @@ const initialPokemonState: PokemonState = {
   pokemon: undefined,
   goodAgainst: [],
   badAgainst: [],
+  loadPokemonError: undefined,
+  loadTypesError: undefined,
 };
 
 export const PokemonStore = signalStore(
   withState(initialPokemonState),
   withComputed((state) => ({
     currentPokemonIdentifier: computed(() => Number(state.pokemon()?.id)),
+    errors: computed(() => {
+      const errors: string[] = [];
+      if (state.loadPokemonError()) {
+        errors.push(state.loadPokemonError() as string);
+      }
+      if (state.loadTypesError()) {
+        errors.push(state.loadTypesError() as string);
+      }
+      return errors;
+    }),
   })),
   withMethods((state, pokemonService = inject(PokemonService)) => ({
     loadPokemonByIdentifier: rxMethod<string | number>(
@@ -45,16 +61,29 @@ export const PokemonStore = signalStore(
                 pokemonService.loadTypeInfo(type),
               );
               return forkJoin(sources).pipe(
-                map((typeInfoCollection: TypeInformation[]) => {
-                  const { goodAgainst, badAgainst } =
-                    getUniqueGoodAgainstBadAgainstTypes(typeInfoCollection);
-                  patchState(state, {
-                    goodAgainst,
-                    badAgainst,
-                    isLoading: false,
-                  });
-                }),
+                tapResponse(
+                  (typeInfoCollection: TypeInformation[]) => {
+                    const { goodAgainst, badAgainst } =
+                      getUniqueGoodAgainstBadAgainstTypes(typeInfoCollection);
+                    patchState(state, {
+                      goodAgainst,
+                      badAgainst,
+                      isLoading: false,
+                    });
+                  },
+                  (error: HttpErrorResponse) => {
+                    console.error('Error loading type info', error);
+                    const loadTypesError = `Unable to load type advantages/disadvantages. Error: ${error.message}`;
+                    patchState(state, { loadTypesError, isLoading: false });
+                  },
+                ),
               );
+            }),
+            catchError((error: HttpErrorResponse) => {
+              console.error('Error loading pokemon', error);
+              const loadPokemonError = `Unable to load pokemon. Error: ${error.message}`;
+              patchState(state, { loadPokemonError, isLoading: false });
+              return EMPTY;
             }),
           ),
         ),
