@@ -111,7 +111,7 @@ export const PokemonStore = signalStore(
         tap((searchInput) => {
           if (searchInput.length < 3) return;
           const filteredResults = pokemonNames.filter((name) =>
-            name.includes(searchInput),
+            name.toLowerCase().includes(searchInput.toLowerCase()),
           );
           patchState(state, { pokemonSearchResults: filteredResults });
         }),
