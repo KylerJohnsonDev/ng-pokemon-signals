@@ -16,6 +16,7 @@ import {
 } from '@angular/forms';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInput } from '@angular/material/input';
+import { MAX_POKEMON_ID } from './pokemon-utils';
 
 @Component({
   selector: 'app-pokemon',
@@ -25,7 +26,7 @@ import { MatInput } from '@angular/material/input';
       @if (pokemonStore.errors().length > 0) {
         <app-error-banner [errorMessages]="pokemonStore.errors()" />
       }
-      <form>
+      <form class="fixed w-full">
         <mat-form-field class="w-full">
           <mat-label>Pokemon Search</mat-label>
           <input
@@ -75,7 +76,6 @@ import { MatInput } from '@angular/material/input';
 })
 export class PokemonComponent {
   @HostBinding('class') class = 'flex flex-col grow';
-  searchInput = signal<string>('');
   pokemonSearchForm: FormGroup;
   readonly pokemonStore = inject(PokemonStore);
 
@@ -94,10 +94,8 @@ export class PokemonComponent {
   }
 
   searchForPokemon(searchInput: string): void {
-    console.log(searchInput);
-    if (searchInput.length < 1) return;
+    if (searchInput.length < 3) return;
     this.pokemonStore.loadPokemonByIdentifier(searchInput);
-    this.searchInput.set('');
   }
 
   onPrevious(): void {
@@ -109,9 +107,8 @@ export class PokemonComponent {
   }
 
   onNext(): void {
-    const maxNumberOfPokemon = 1024;
     const identifier = this.pokemonStore.currentPokemonIdentifier();
-    if (identifier < maxNumberOfPokemon) {
+    if (identifier < MAX_POKEMON_ID) {
       const nextPokemonId = identifier + 1;
       this.pokemonStore.loadPokemonByIdentifier(nextPokemonId);
     }

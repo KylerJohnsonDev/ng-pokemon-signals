@@ -109,7 +109,6 @@ export const PokemonStore = signalStore(
       pipe(
         debounceTime(300),
         tap((searchInput) => {
-          if (searchInput.length < 3) return;
           const filteredResults = pokemonNames.filter((name) =>
             name.toLowerCase().includes(searchInput.toLowerCase()),
           );

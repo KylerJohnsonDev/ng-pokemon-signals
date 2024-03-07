@@ -5,6 +5,7 @@ import { PokemonStore } from './pokemon.store';
 import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
 import { TypePillComponent } from 'src/app/components/type-pill.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
+import { MAX_POKEMON_ID } from './pokemon-utils';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -86,9 +87,8 @@ export class PokemonDetailComponent {
   }
 
   onNext(): void {
-    const maxNumberOfPokemon = 1024;
     const identifier = this.pokemonStore.currentPokemonIdentifier();
-    if (identifier < maxNumberOfPokemon) {
+    if (identifier < MAX_POKEMON_ID) {
       const nextPokemonId = identifier + 1;
       this.pokemonStore.loadPokemonByIdentifier(nextPokemonId);
     }
