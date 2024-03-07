@@ -10,8 +10,22 @@ import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { Pokemon, TypeInformation } from './pokemon.model';
 import { computed, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
-import { EMPTY, catchError, forkJoin, map, pipe, switchMap, tap } from 'rxjs';
-import { getUniqueGoodAgainstBadAgainstTypes } from './pokemon-utils';
+import {
+  EMPTY,
+  Observable,
+  catchError,
+  debounce,
+  debounceTime,
+  forkJoin,
+  map,
+  pipe,
+  switchMap,
+  tap,
+} from 'rxjs';
+import {
+  getUniqueGoodAgainstBadAgainstTypes,
+  pokemonNames,
+} from './pokemon-utils';
 import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -22,6 +36,7 @@ interface PokemonState {
   badAgainst: string[];
   loadPokemonError: string | undefined;
   loadTypesError: string | undefined;
+  pokemonSearchResults: string[];
 }
 
 const initialPokemonState: PokemonState = {
@@ -31,6 +46,7 @@ const initialPokemonState: PokemonState = {
   badAgainst: [],
   loadPokemonError: undefined,
   loadTypesError: undefined,
+  pokemonSearchResults: [...pokemonNames],
 };
 
 export const PokemonStore = signalStore(
@@ -87,6 +103,18 @@ export const PokemonStore = signalStore(
             }),
           ),
         ),
+      ),
+    ),
+    filterPokemonSearchResults: rxMethod<string>(
+      pipe(
+        debounceTime(300),
+        tap((searchInput) => {
+          if (searchInput.length < 3) return;
+          const filteredResults = pokemonNames.filter((name) =>
+            name.includes(searchInput),
+          );
+          patchState(state, { pokemonSearchResults: filteredResults });
+        }),
       ),
     ),
   })),

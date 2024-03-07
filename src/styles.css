@@ -15,3 +15,6 @@ body {
 .app-input {
   @apply shadow appearance-none grow p-4 m-0 leading-tight focus:outline-none;
 }
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

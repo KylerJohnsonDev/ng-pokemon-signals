@@ -6,6 +6,16 @@ import { PokemonStore } from './pokemon.store';
 import { PokemonDetailComponent } from './pokemon-detail.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
 import { ErrorBannerComponent } from 'src/app/components/error-banner.component';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import {
+  FormControl,
+  FormGroup,
+  FormsModule,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+} from '@angular/forms';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInput } from '@angular/material/input';
 
 @Component({
   selector: 'app-pokemon',
@@ -15,23 +25,29 @@ import { ErrorBannerComponent } from 'src/app/components/error-banner.component'
       @if (pokemonStore.errors().length > 0) {
         <app-error-banner [errorMessages]="pokemonStore.errors()" />
       }
-      <section class="flex flex-row m-4">
-        <input
-          class="app-input rounded-l bg-gray-600 text-white grow"
-          type="text"
-          placeholder="Type a Pokemon and press enter"
-          signalInput
-          [signal]="searchInput"
-          (keydown.enter)="searchForPokemon(searchInput())"
-        />
-        <button
-          type="button"
-          class="px-6 bg-blue-500 rounded-r cursor-pointer"
-          (click)="searchForPokemon(searchInput())"
-        >
-          Go
-        </button>
-      </section>
+      <form>
+        <mat-form-field class="w-full">
+          <mat-label>Pokemon Search</mat-label>
+          <input
+            type="text"
+            placeholder="Start typing a Pokemon name..."
+            aria-label="Pokemon Name Search"
+            matInput
+            [formControl]="pokemonSearchCtrl"
+            [matAutocomplete]="auto"
+          />
+          <mat-autocomplete
+            autoActiveFirstOption
+            #auto="matAutocomplete"
+            (optionSelected)="searchForPokemon($event.option.value)"
+          >
+            @for (option of pokemonStore.pokemonSearchResults(); track option) {
+              <mat-option [value]="option">{{ option | titlecase }}</mat-option>
+            }
+          </mat-autocomplete>
+        </mat-form-field>
+      </form>
+
       <app-pokemon-detail class="m-4"></app-pokemon-detail>
     </main>
     <footer>
@@ -50,14 +66,35 @@ import { ErrorBannerComponent } from 'src/app/components/error-banner.component'
     SignalInputDirective,
     PaginatorComponent,
     ErrorBannerComponent,
+    MatAutocompleteModule,
+    FormsModule,
+    ReactiveFormsModule,
+    MatFormFieldModule,
+    MatInput,
   ],
 })
 export class PokemonComponent {
   @HostBinding('class') class = 'flex flex-col grow';
   searchInput = signal<string>('');
+  pokemonSearchForm: FormGroup;
   readonly pokemonStore = inject(PokemonStore);
 
+  get pokemonSearchCtrl(): FormControl {
+    return this.pokemonSearchForm.get('pokemonSearchCtrl') as FormControl;
+  }
+
+  constructor(private fb: NonNullableFormBuilder) {
+    this.pokemonSearchForm = this.fb.group({
+      pokemonSearchCtrl: new FormControl(''),
+    });
+
+    this.pokemonStore.filterPokemonSearchResults(
+      this.pokemonSearchCtrl.valueChanges,
+    );
+  }
+
   searchForPokemon(searchInput: string): void {
+    console.log(searchInput);
     if (searchInput.length < 1) return;
     this.pokemonStore.loadPokemonByIdentifier(searchInput);
     this.searchInput.set('');
