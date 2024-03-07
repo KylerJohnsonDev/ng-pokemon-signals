@@ -1,6 +1,6 @@
 [build]
   publish = "dist/ng-pokemon-signals"
-  command = "npm run build:prod"
+  command = "npm run build"
 [[redirects]]
   from = "/*"
   to = "/index.html"
