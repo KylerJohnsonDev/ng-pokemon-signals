@@ -1,4 +1,4 @@
-import { TypeInformation } from './pokemon.model';
+import { TypeInformation } from '../pokemon.model';
 
 export function getUniqueGoodAgainstBadAgainstTypes(
   typeInfoCollection: TypeInformation[],

@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Type2, TypeChipDefinition } from '../pages/pokemon/pokemon.model';
+import { Type2, TypeChipDefinition } from '../pokemon.model';
 
 const pokemonTypeColorsMap = new Map<string, TypeChipDefinition>([
   ['normal', { label: 'Normal', color: '#A8A77A' }],

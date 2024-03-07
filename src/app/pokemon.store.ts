@@ -12,12 +12,9 @@ import { computed, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
 import {
   EMPTY,
-  Observable,
   catchError,
-  debounce,
   debounceTime,
   forkJoin,
-  map,
   pipe,
   switchMap,
   tap,
@@ -25,7 +22,7 @@ import {
 import {
   getUniqueGoodAgainstBadAgainstTypes,
   pokemonNames,
-} from './pokemon-utils';
+} from './utils/pokemon-utils';
 import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 
@@ -50,6 +47,7 @@ const initialPokemonState: PokemonState = {
 };
 
 export const PokemonStore = signalStore(
+  { providedIn: 'root' },
   withState(initialPokemonState),
   withComputed((state) => ({
     currentPokemonIdentifier: computed(() => Number(state.pokemon()?.id)),

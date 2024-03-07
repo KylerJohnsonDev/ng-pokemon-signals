@@ -1,11 +1,11 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, inject } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
-import { PokemonStore } from './pokemon.store';
+import { PokemonStore } from '../../pokemon.store';
 import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
 import { TypePillComponent } from 'src/app/components/type-pill.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
-import { MAX_POKEMON_ID } from './pokemon-utils';
+import { MAX_POKEMON_ID } from '../../utils/pokemon-utils';
 
 @Component({
   selector: 'app-pokemon-detail',
