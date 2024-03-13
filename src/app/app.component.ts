@@ -36,56 +36,11 @@ import { MatInputModule } from '@angular/material/input';
       <div class="grow"></div>
     </nav>
 
-    <form class="sticky w-full">
-      <mat-form-field class="w-full">
-        <mat-label>Pokemon Search</mat-label>
-        <input
-          type="text"
-          placeholder="Start typing a Pokemon name..."
-          aria-label="Pokemon Name Search"
-          matInput
-          [formControl]="pokemonSearchCtrl"
-          [matAutocomplete]="auto"
-        />
-        <mat-autocomplete
-          autoActiveFirstOption
-          #auto="matAutocomplete"
-          (optionSelected)="searchForPokemon($event.option.value)"
-        >
-          @for (option of pokemonStore.pokemonSearchResults(); track option) {
-            <mat-option [value]="option">{{ option | titlecase }}</mat-option>
-          }
-        </mat-autocomplete>
-      </mat-form-field>
-    </form>
-
-    <main class="flex grow overflow-auto">
+    <main class="flex w-full overflow-auto">
       <router-outlet></router-outlet>
     </main>
   `,
 })
 export class AppComponent {
   @HostBinding('class') class = 'flex flex-col h-full';
-  pokemonSearchForm: FormGroup;
-  readonly pokemonStore = inject(PokemonStore);
-
-  get pokemonSearchCtrl(): FormControl {
-    return this.pokemonSearchForm.get('pokemonSearchCtrl') as FormControl;
-  }
-
-  constructor(private fb: NonNullableFormBuilder) {
-    this.pokemonSearchForm = this.fb.group({
-      pokemonSearchCtrl: new FormControl(''),
-    });
-
-    this.pokemonStore.filterPokemonSearchResults(
-      this.pokemonSearchCtrl.valueChanges,
-    );
-  }
-
-  searchForPokemon(searchInput: string): void {
-    console.log(searchInput);
-    if (searchInput.length < 3) return;
-    this.pokemonStore.loadPokemonByIdentifier(searchInput);
-  }
 }
