@@ -1,4 +1,6 @@
 import { Component } from '@angular/core';
+import { SupabaseService } from '../supabase.service';
+import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
 
 @Component({
   selector: 'app-login-page',
@@ -19,7 +21,11 @@ import { Component } from '@angular/core';
           </p>
         </div>
 
-        <div class="max-w-xl mx-auto">
+        <form
+          class="max-w-xl mx-auto"
+          [formGroup]="signInForm"
+          (ngSubmit)="onSubmit()"
+        >
           <div
             class="mt-2.5 relative text-gray-400 focus-within:text-gray-600 mb-2"
           >
@@ -43,9 +49,10 @@ import { Component } from '@angular/core';
             </div>
 
             <input
+              formControlName="email"
               type="email"
               name=""
-              id=""
+              id="email"
               placeholder="Enter email to get started"
               class="block w-full py-4 pl-10 pr-4 text-black placeholder-gray-500 transition-all duration-200 bg-white border border-gray-200 rounded-md focus:outline-none focus:border-blue-600 caret-blue-600"
             />
@@ -54,13 +61,41 @@ import { Component } from '@angular/core';
             type="submit"
             class="inline-flex items-center justify-center w-full px-4 py-4 text-base font-semibold text-white transition-all duration-200 bg-blue-600 border border-transparent rounded-md focus:outline-none hover:bg-blue-700 focus:bg-blue-700"
           >
-            Get Magic Link
+            Send Magic Link
           </button>
-        </div>
+        </form>
       </div>
     </section>
   `,
+  standalone: true,
+  imports: [ReactiveFormsModule],
 })
 export class LoginPageComponent {
-  constructor() {}
+  loading = false;
+
+  signInForm = this.formBuilder.group({
+    email: '',
+  });
+
+  constructor(
+    private readonly supabase: SupabaseService,
+    private readonly formBuilder: FormBuilder,
+  ) {}
+
+  async onSubmit(): Promise<void> {
+    try {
+      this.loading = true;
+      const email = this.signInForm.value.email as string;
+      const { error } = await this.supabase.signIn(email);
+      if (error) throw error;
+      alert('Check your email for the login link!');
+    } catch (error) {
+      if (error instanceof Error) {
+        alert(error.message);
+      }
+    } finally {
+      this.signInForm.reset();
+      this.loading = false;
+    }
+  }
 }
