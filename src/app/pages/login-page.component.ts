@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
-import { SupabaseService } from '../supabase.service';
+import { Component, inject } from '@angular/core';
 import { FormBuilder, FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { authStore } from '../auth.store';
 
 @Component({
   selector: 'app-login-page',
@@ -77,25 +77,15 @@ export class LoginPageComponent {
     email: '',
   });
 
-  constructor(
-    private readonly supabase: SupabaseService,
-    private readonly formBuilder: FormBuilder,
-  ) {}
+  readonly authStore = inject(authStore);
+
+  constructor(private readonly formBuilder: FormBuilder) {}
 
   async onSubmit(): Promise<void> {
-    try {
-      this.loading = true;
-      const email = this.signInForm.value.email as string;
-      const { error } = await this.supabase.signIn(email);
-      if (error) throw error;
-      alert('Check your email for the login link!');
-    } catch (error) {
-      if (error instanceof Error) {
-        alert(error.message);
-      }
-    } finally {
-      this.signInForm.reset();
-      this.loading = false;
-    }
+    this.loading = true;
+    const email = this.signInForm.value.email as string;
+    await this.authStore.signIn(email);
+    this.signInForm.reset();
+    this.loading = false;
   }
 }
