@@ -46,12 +46,22 @@ export const authStore = signalStore(
         patchState(state, { session });
       });
     },
+    signInWithGoogle: async () => {
+      const { data, error } = await state
+        .supabaseClient()!
+        .auth.signInWithOAuth({
+          provider: 'google',
+          options: { redirectTo: window.location.origin },
+        });
+      if (error) {
+        patchState(state, { errorMessage: error.message });
+      }
+    },
     signIn: async (email: string) => {
       if (state.supabaseClient()) {
         const { data, error } = await state
           .supabaseClient()!
           .auth.signInWithOtp({ email });
-        console.log(data);
 
         if (error) {
           patchState(state, { errorMessage: error.message });
