@@ -60,7 +60,7 @@ export const PokemonStore = signalStore(
       const pokemonId = state.pokemon()?.id;
       const isFavorite = state
         .favoritePokemon()
-        .some((fav) => fav.pokemon_id === pokemonId);
+        .some((fav) => fav?.pokemon_id === pokemonId);
       console.log(isFavorite, typeof pokemonId);
       return isFavorite;
     }),
