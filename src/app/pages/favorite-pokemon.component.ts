@@ -8,18 +8,25 @@ import { CardComponent } from '../components/card.component';
   standalone: true,
   imports: [CardComponent],
   host: {
-    class:
-      'grid grid-cols-2 auto-rows-min md:grid-cols-3 gap-4 p-4 justify-items-center',
+    class: 'h-full w-full flex items-center justify-center',
   },
   template: `
-    @for (pokemon of pokemonStore.favoritePokemon(); track pokemon.id) {
-      <app-card
-        [imageUrl]="pokemon.url_to_pokemon_image"
-        [imageAlt]="pokemon.pokemon_name"
-        [title]="pokemon.pokemon_name"
-        buttonText="Remove"
-        (buttonClick)="pokemonStore.RemoveFromFavorites(pokemon)"
-      />
+    @if (pokemonStore.favoritePokemon().length === 0) {
+      <h1 class="text-4xl font-bold">No favorite Pokemon</h1>
+    } @else {
+      <div
+        class="grid grid-cols-2 auto-rows-min md:grid-cols-3 gap-4 p-4 justify-items-center"
+      >
+        @for (pokemon of pokemonStore.favoritePokemon(); track pokemon.id) {
+          <app-card
+            [imageUrl]="pokemon.url_to_pokemon_image"
+            [imageAlt]="pokemon.pokemon_name"
+            [title]="pokemon.pokemon_name"
+            buttonText="Remove"
+            (buttonClick)="pokemonStore.RemoveFromFavorites(pokemon)"
+          />
+        }
+      </div>
     }
   `,
 })
