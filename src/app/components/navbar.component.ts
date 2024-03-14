@@ -49,11 +49,21 @@ import { RouterModule } from '@angular/router';
           >
             <li>
               <a
-                routerLink="/pokemon/type-tool"
+                routerLink="/pokemon"
+                routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
+                [routerLinkActiveOptions]="{ exact: true }"
+                class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
+                aria-current="page"
+                >Browse</a
+              >
+            </li>
+            <li>
+              <a
+                routerLink="/pokemon/bulbasaur"
                 routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                 class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
-                >Type Tool</a
+                >Lookup Tool</a
               >
             </li>
             @if (authStore.session()) {

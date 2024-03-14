@@ -8,7 +8,8 @@ import { CardComponent } from '../components/card.component';
   standalone: true,
   imports: [CardComponent],
   host: {
-    class: 'grid grid-cols-2 md:grid-cols-3 gap-4 p-4 justify-items-center',
+    class:
+      'grid grid-cols-2 auto-rows-min md:grid-cols-3 gap-4 p-4 justify-items-center',
   },
   template: `
     @for (pokemon of pokemonStore.favoritePokemon(); track pokemon.id) {

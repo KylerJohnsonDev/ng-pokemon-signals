@@ -24,15 +24,22 @@ export const routes: Routes = [
     component: PokemonLayoutComponent,
     children: [
       {
-        path: 'type-tool',
+        path: ':id',
         loadComponent: () =>
           import('./app/pages/pokemon/pokemon-type-tool.component').then(
             (m) => m.PokemonTypeToolComponent,
           ),
-        title: 'Pokemon Type Tool',
+        title: 'Pokemon Detail',
         data: { animation: 'PokemonTypeToolPage' },
       },
-      { path: '', redirectTo: '/pokemon/type-tool', pathMatch: 'full' },
+      {
+        path: '',
+        loadComponent: () =>
+          import('./app/pages/pokemon/browse-pokemon-page.component').then(
+            (m) => m.BrowsePokemonPageComponent,
+          ),
+        pathMatch: 'full',
+      },
     ],
   },
   { path: '', redirectTo: '/pokemon', pathMatch: 'full' },

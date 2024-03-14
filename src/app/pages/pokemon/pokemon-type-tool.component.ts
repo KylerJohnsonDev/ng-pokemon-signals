@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, HostBinding, inject } from '@angular/core';
+import { Component, HostBinding, computed, inject, input } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
 import { PokemonStore } from '../../pokemon.store';
 import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
@@ -109,8 +109,14 @@ import { authStore } from 'src/app/auth.store';
 })
 export class PokemonTypeToolComponent {
   @HostBinding('class') class = 'flex flex-col grow';
+  id = input<string | number>();
+  iden = computed(() => this.id() ?? 'bulbasaur');
   readonly pokemonStore = inject(PokemonStore);
   readonly authStore = inject(authStore);
+
+  constructor() {
+    this.pokemonStore.loadPokemonByIdentifier(this.iden);
+  }
 
   onPrevious(): void {
     const identifier = this.pokemonStore.currentPokemonIdentifier();
