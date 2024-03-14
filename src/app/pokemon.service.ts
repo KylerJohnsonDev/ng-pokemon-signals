@@ -1,6 +1,10 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { FavoritePokemon, Pokemon } from './pokemon.model';
+import {
+  FavoritePokemon,
+  Pokemon,
+  PokemonCollectionResponse,
+} from './pokemon.model';
 import { Observable } from 'rxjs';
 import { environment } from 'src/environments/environment';
 import { SupabaseClient, createClient } from '@supabase/supabase-js';
@@ -15,6 +19,15 @@ export class PokemonService {
     this.supabaseClient = createClient(
       environment.supabaseUrl,
       environment.supabaseKey,
+    );
+  }
+
+  loadPokemon(
+    offset: number,
+    limit: number,
+  ): Observable<PokemonCollectionResponse> {
+    return this.http.get<PokemonCollectionResponse>(
+      `${this.pokeApiUrl}/pokemon?offset=${offset}&limit=${limit}`,
     );
   }
 

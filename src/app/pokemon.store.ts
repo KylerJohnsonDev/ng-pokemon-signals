@@ -8,13 +8,18 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { FavoritePokemon, Pokemon, TypeInformation } from './pokemon.model';
+import {
+  FavoritePokemon,
+  Pokemon,
+  PokemonCollectionItem,
+  PokemonQuery,
+  TypeInformation,
+} from './pokemon.model';
 import { computed, effect, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
 import {
   EMPTY,
   catchError,
-  concatMap,
   debounceTime,
   forkJoin,
   pipe,
@@ -29,19 +34,37 @@ import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
 import { authStore } from './auth.store';
 
+// TODO: break this up into more localized stores
 interface PokemonState {
-  isLoading: boolean;
+  pokemonCollection: PokemonCollectionItem[];
+  isLoadingPokemonCollection: boolean;
+  totalCount: number;
+  currentPage: number;
+  pokemonCollectionQuery: {
+    limit: number;
+    offset: number;
+  };
   pokemon: Pokemon | undefined;
+  isLoadingPokemon: boolean;
   goodAgainst: string[];
   badAgainst: string[];
   loadPokemonError: string | undefined;
   loadTypesError: string | undefined;
   pokemonSearchResults: string[];
   favoritePokemon: FavoritePokemon[];
+  isLoadingFavoritePokemon: boolean;
 }
 
 const initialPokemonState: PokemonState = {
-  isLoading: false,
+  pokemonCollection: [],
+  totalCount: 0,
+  currentPage: 1,
+  pokemonCollectionQuery: {
+    offset: 0,
+    limit: 50,
+  },
+  isLoadingPokemonCollection: false,
+  isLoadingPokemon: false,
   pokemon: undefined,
   goodAgainst: [],
   badAgainst: [],
@@ -49,6 +72,7 @@ const initialPokemonState: PokemonState = {
   loadTypesError: undefined,
   pokemonSearchResults: [...pokemonNames],
   favoritePokemon: [],
+  isLoadingFavoritePokemon: false,
 };
 
 export const PokemonStore = signalStore(
@@ -80,9 +104,29 @@ export const PokemonStore = signalStore(
       pokemonService = inject(PokemonService),
       _authStore = inject(authStore),
     ) => ({
+      loadPokemon: rxMethod<PokemonQuery>(
+        pipe(
+          switchMap((query) => {
+            return pokemonService.loadPokemon(query.offset, query.limit).pipe(
+              tapResponse(
+                (response) => {
+                  patchState(state, {
+                    isLoadingPokemonCollection: false,
+                    totalCount: response.count,
+                    pokemonCollection: response.results,
+                  });
+                },
+                (error: HttpErrorResponse) => {
+                  console.error('Error loading pokemon collection', error);
+                },
+              ),
+            );
+          }),
+        ),
+      ),
       loadPokemonByIdentifier: rxMethod<string | number>(
         pipe(
-          tap(() => patchState(state, { isLoading: true })),
+          tap(() => patchState(state, { isLoadingPokemon: true })),
           switchMap((identifier) =>
             pokemonService.loadPokemonByIdentifier(identifier).pipe(
               tap((pokemon) => patchState(state, { pokemon })),
@@ -99,13 +143,16 @@ export const PokemonStore = signalStore(
                       patchState(state, {
                         goodAgainst,
                         badAgainst,
-                        isLoading: false,
+                        isLoadingPokemon: false,
                       });
                     },
                     (error: HttpErrorResponse) => {
                       console.error('Error loading type info', error);
                       const loadTypesError = `Unable to load type advantages/disadvantages. Error: ${error.message}`;
-                      patchState(state, { loadTypesError, isLoading: false });
+                      patchState(state, {
+                        loadTypesError,
+                        isLoadingPokemon: false,
+                      });
                     },
                   ),
                 );
@@ -113,7 +160,10 @@ export const PokemonStore = signalStore(
               catchError((error: HttpErrorResponse) => {
                 console.error('Error loading pokemon', error);
                 const loadPokemonError = `Unable to load pokemon. Error: ${error.message}`;
-                patchState(state, { loadPokemonError, isLoading: false });
+                patchState(state, {
+                  loadPokemonError,
+                  isLoadingPokemon: false,
+                });
                 return EMPTY;
               }),
             ),

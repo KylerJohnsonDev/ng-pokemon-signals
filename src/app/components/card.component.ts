@@ -10,9 +10,11 @@ import { Component, EventEmitter, Output, input } from '@angular/core';
       <a>
         <img class="rounded-t-lg" [src]="imageUrl()" [alt]="imageAlt()" />
       </a>
-      <div class="p-5">
+      <div class="p-5 flex flex-col items-center">
         <a>
-          <h5 class="mb-2 text-2xl font-bold tracking-tight text-white">
+          <h5
+            class="text-center mb-2 text-2xl font-bold tracking-tight text-white"
+          >
             {{ title() }}
           </h5>
         </a>
@@ -22,12 +24,14 @@ import { Component, EventEmitter, Output, input } from '@angular/core';
             far, in reverse chronological order.
           </p>
         }
-        <a
-          (click)="buttonClick.emit()"
-          class="cursor-pointer inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-        >
-          {{ buttonText() }}
-        </a>
+        @if (showButton()) {
+          <a
+            (click)="buttonClick.emit()"
+            class="max-w-fit margin-auto cursor-pointer inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+          >
+            {{ buttonText() }}
+          </a>
+        }
       </div>
     </div>
   `,
@@ -37,6 +41,7 @@ export class CardComponent {
   description = input<string>();
   imageUrl = input<string>();
   imageAlt = input<string>();
+  showButton = input<boolean>(true);
   buttonText = input<string>();
   @Output() buttonClick = new EventEmitter();
 }
