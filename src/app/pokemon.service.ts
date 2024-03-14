@@ -42,9 +42,9 @@ export class PokemonService {
     const res = await this.supabaseClient
       ?.from('favorite_pokemon')
       .insert([favoritePokemon])
-      .single();
-    console.log(res);
-    return res?.data as unknown as FavoritePokemon;
+      .select();
+    const data: FavoritePokemon[] = res?.data as unknown as FavoritePokemon[];
+    return data[0] as FavoritePokemon;
   }
 
   async getFavoritePokemon(userId: string): Promise<FavoritePokemon[]> {

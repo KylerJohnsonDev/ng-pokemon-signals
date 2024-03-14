@@ -81,9 +81,9 @@ export const authStore = signalStore(
     onInit: (store) => {
       store.initializeSupabaseClientAndListenForAuthChanges();
 
-      effect(() => {
-        console.log(getState(store));
-      });
+      // effect(() => {
+      //   console.log(getState(store));
+      // });
     },
   }),
 );

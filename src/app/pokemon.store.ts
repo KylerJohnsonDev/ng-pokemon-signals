@@ -1,4 +1,5 @@
 import {
+  getState,
   patchState,
   signalStore,
   withComputed,
@@ -8,7 +9,7 @@ import {
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
 import { FavoritePokemon, Pokemon, TypeInformation } from './pokemon.model';
-import { computed, inject } from '@angular/core';
+import { computed, effect, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
 import {
   EMPTY,
@@ -26,6 +27,7 @@ import {
 } from './utils/pokemon-utils';
 import { tapResponse } from '@ngrx/operators';
 import { HttpErrorResponse } from '@angular/common/http';
+import { authStore } from './auth.store';
 
 interface PokemonState {
   isLoading: boolean;
@@ -54,6 +56,14 @@ export const PokemonStore = signalStore(
   withState(initialPokemonState),
   withComputed((state) => ({
     currentPokemonIdentifier: computed(() => Number(state.pokemon()?.id)),
+    isFavorite: computed(() => {
+      const pokemonId = state.pokemon()?.id;
+      const isFavorite = state
+        .favoritePokemon()
+        .some((fav) => fav.pokemon_id === pokemonId);
+      console.log(isFavorite, typeof pokemonId);
+      return isFavorite;
+    }),
     errors: computed(() => {
       const errors: string[] = [];
       if (state.loadPokemonError()) {
@@ -65,83 +75,105 @@ export const PokemonStore = signalStore(
       return errors;
     }),
   })),
-  withMethods((state, pokemonService = inject(PokemonService)) => ({
-    loadPokemonByIdentifier: rxMethod<string | number>(
-      pipe(
-        tap(() => patchState(state, { isLoading: true })),
-        switchMap((identifier) =>
-          pokemonService.loadPokemonByIdentifier(identifier).pipe(
-            tap((pokemon) => patchState(state, { pokemon })),
-            switchMap((pokemon) => {
-              const types = pokemon.types.map((type) => type.type.name);
-              const sources = types.map((type) =>
-                pokemonService.loadTypeInfo(type),
-              );
-              return forkJoin(sources).pipe(
-                tapResponse(
-                  (typeInfoCollection: TypeInformation[]) => {
-                    const { goodAgainst, badAgainst } =
-                      getUniqueGoodAgainstBadAgainstTypes(typeInfoCollection);
-                    patchState(state, {
-                      goodAgainst,
-                      badAgainst,
-                      isLoading: false,
-                    });
-                  },
-                  (error: HttpErrorResponse) => {
-                    console.error('Error loading type info', error);
-                    const loadTypesError = `Unable to load type advantages/disadvantages. Error: ${error.message}`;
-                    patchState(state, { loadTypesError, isLoading: false });
-                  },
-                ),
-              );
-            }),
-            catchError((error: HttpErrorResponse) => {
-              console.error('Error loading pokemon', error);
-              const loadPokemonError = `Unable to load pokemon. Error: ${error.message}`;
-              patchState(state, { loadPokemonError, isLoading: false });
-              return EMPTY;
-            }),
+  withMethods(
+    (
+      state,
+      pokemonService = inject(PokemonService),
+      _authStore = inject(authStore),
+    ) => ({
+      loadPokemonByIdentifier: rxMethod<string | number>(
+        pipe(
+          tap(() => patchState(state, { isLoading: true })),
+          switchMap((identifier) =>
+            pokemonService.loadPokemonByIdentifier(identifier).pipe(
+              tap((pokemon) => patchState(state, { pokemon })),
+              switchMap((pokemon) => {
+                const types = pokemon.types.map((type) => type.type.name);
+                const sources = types.map((type) =>
+                  pokemonService.loadTypeInfo(type),
+                );
+                return forkJoin(sources).pipe(
+                  tapResponse(
+                    (typeInfoCollection: TypeInformation[]) => {
+                      const { goodAgainst, badAgainst } =
+                        getUniqueGoodAgainstBadAgainstTypes(typeInfoCollection);
+                      patchState(state, {
+                        goodAgainst,
+                        badAgainst,
+                        isLoading: false,
+                      });
+                    },
+                    (error: HttpErrorResponse) => {
+                      console.error('Error loading type info', error);
+                      const loadTypesError = `Unable to load type advantages/disadvantages. Error: ${error.message}`;
+                      patchState(state, { loadTypesError, isLoading: false });
+                    },
+                  ),
+                );
+              }),
+              catchError((error: HttpErrorResponse) => {
+                console.error('Error loading pokemon', error);
+                const loadPokemonError = `Unable to load pokemon. Error: ${error.message}`;
+                patchState(state, { loadPokemonError, isLoading: false });
+                return EMPTY;
+              }),
+            ),
           ),
         ),
       ),
-    ),
-    filterPokemonSearchResults: rxMethod<string>(
-      pipe(
-        debounceTime(300),
-        tap((searchInput) => {
-          const filteredResults = pokemonNames.filter((name) =>
-            name.toLowerCase().includes(searchInput.toLowerCase()),
-          );
-          patchState(state, { pokemonSearchResults: filteredResults });
-        }),
+      filterPokemonSearchResults: rxMethod<string>(
+        pipe(
+          debounceTime(300),
+          tap((searchInput) => {
+            const filteredResults = pokemonNames.filter((name) =>
+              name.toLowerCase().includes(searchInput.toLowerCase()),
+            );
+            patchState(state, { pokemonSearchResults: filteredResults });
+          }),
+        ),
       ),
-    ),
-    addToFavorites: async (pokemon: Pokemon, userId: string) => {
-      const favoritePokemon = await pokemonService.addPokemonToFavorites(
-        pokemon,
-        userId,
-      );
-    },
-    loadFavoritePokemon: async (userId: string) => {
-      const favoritePokemon = await pokemonService.getFavoritePokemon(userId);
-      patchState(state, { favoritePokemon });
-    },
-    RemoveFromFavorites: async (pokemon: FavoritePokemon) => {
-      try {
-        await pokemonService.removePokemonFromFavorites(pokemon);
-        const favoritePokemon = state
-          .favoritePokemon()
-          .filter((fav) => fav.id !== pokemon.id);
+      addToFavorites: async (pokemon: Pokemon) => {
+        try {
+          const addedFavoritePokemon =
+            await pokemonService.addPokemonToFavorites(
+              pokemon,
+              _authStore.session()?.user.id ?? '',
+            );
+          console.log(addedFavoritePokemon);
+          const favoritePokemon = [
+            ...state.favoritePokemon(),
+            addedFavoritePokemon,
+          ];
+          patchState(state, { favoritePokemon });
+        } catch (e) {
+          console.error('Error adding pokemon to favorites', e);
+        }
+      },
+      loadFavoritePokemon: async (userId: string) => {
+        const favoritePokemon = await pokemonService.getFavoritePokemon(userId);
         patchState(state, { favoritePokemon });
-      } catch (e) {
-        console.error('Error removing pokemon from favorites', e);
-      }
-    },
-  })),
+      },
+      RemoveFromFavorites: async (pokemon: FavoritePokemon) => {
+        try {
+          await pokemonService.removePokemonFromFavorites(pokemon);
+          const favoritePokemon = state
+            .favoritePokemon()
+            .filter((fav) => fav.id !== pokemon.id);
+          patchState(state, { favoritePokemon });
+        } catch (e) {
+          console.error('Error removing pokemon from favorites', e);
+        }
+      },
+    }),
+  ),
   withHooks({
-    onInit(store) {
+    onInit(store, _authStore = inject(authStore)) {
       store.loadPokemonByIdentifier(1);
+      store.loadFavoritePokemon(_authStore.session()?.user.id ?? '');
+      // debug
+      effect(() => {
+        console.log(getState(store));
+      });
     },
   }),
 );
