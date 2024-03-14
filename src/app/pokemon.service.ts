@@ -46,4 +46,24 @@ export class PokemonService {
     console.log(res);
     return res?.data as unknown as FavoritePokemon;
   }
+
+  async getFavoritePokemon(userId: string): Promise<FavoritePokemon[]> {
+    const res = await this.supabaseClient
+      ?.from('favorite_pokemon')
+      .select('*')
+      .eq('user_id', userId);
+    console.log(res);
+    return res?.data as unknown as FavoritePokemon[];
+  }
+
+  async removePokemonFromFavorites(pokemon: FavoritePokemon): Promise<void> {
+    const res = await this.supabaseClient
+      ?.from('favorite_pokemon')
+      .delete()
+      .eq('id', pokemon.id);
+
+    if (res?.error) {
+      throw new Error('Unable to remove pokemon from favorites');
+    }
+  }
 }

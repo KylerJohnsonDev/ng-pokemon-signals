@@ -7,7 +7,7 @@ import {
   withState,
 } from '@ngrx/signals';
 import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import { Pokemon, TypeInformation } from './pokemon.model';
+import { FavoritePokemon, Pokemon, TypeInformation } from './pokemon.model';
 import { computed, inject } from '@angular/core';
 import { PokemonService } from './pokemon.service';
 import {
@@ -35,7 +35,7 @@ interface PokemonState {
   loadPokemonError: string | undefined;
   loadTypesError: string | undefined;
   pokemonSearchResults: string[];
-  favoritePokemon: any[];
+  favoritePokemon: FavoritePokemon[];
 }
 
 const initialPokemonState: PokemonState = {
@@ -122,6 +122,21 @@ export const PokemonStore = signalStore(
         pokemon,
         userId,
       );
+    },
+    loadFavoritePokemon: async (userId: string) => {
+      const favoritePokemon = await pokemonService.getFavoritePokemon(userId);
+      patchState(state, { favoritePokemon });
+    },
+    RemoveFromFavorites: async (pokemon: FavoritePokemon) => {
+      try {
+        await pokemonService.removePokemonFromFavorites(pokemon);
+        const favoritePokemon = state
+          .favoritePokemon()
+          .filter((fav) => fav.id !== pokemon.id);
+        patchState(state, { favoritePokemon });
+      } catch (e) {
+        console.error('Error removing pokemon from favorites', e);
+      }
     },
   })),
   withHooks({
