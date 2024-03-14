@@ -60,8 +60,7 @@ export const PokemonStore = signalStore(
       const pokemonId = state.pokemon()?.id;
       const isFavorite = state
         .favoritePokemon()
-        .some((fav) => fav?.pokemon_id === pokemonId);
-      console.log(isFavorite, typeof pokemonId);
+        ?.some((fav) => fav?.pokemon_id === pokemonId);
       return isFavorite;
     }),
     errors: computed(() => {
@@ -150,6 +149,7 @@ export const PokemonStore = signalStore(
         }
       },
       loadFavoritePokemon: async (userId: string) => {
+        if (!_authStore.session()) return;
         const favoritePokemon = await pokemonService.getFavoritePokemon(userId);
         patchState(state, { favoritePokemon });
       },
@@ -171,9 +171,9 @@ export const PokemonStore = signalStore(
       store.loadPokemonByIdentifier(1);
       store.loadFavoritePokemon(_authStore.session()?.user.id ?? '');
       // debug
-      effect(() => {
-        console.log(getState(store));
-      });
+      // effect(() => {
+      //   console.log(getState(store));
+      // });
     },
   }),
 );
