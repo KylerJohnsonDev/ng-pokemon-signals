@@ -19,6 +19,14 @@ export interface Pokemon {
   weight: number;
 }
 
+export interface FavoritePokemon {
+  id: number;
+  pokemon_name: string;
+  pokemon_id: number;
+  url_to_pokemon_image: string;
+  user_id: string;
+}
+
 export interface Ability {
   ability: Ability2;
   is_hidden: boolean;

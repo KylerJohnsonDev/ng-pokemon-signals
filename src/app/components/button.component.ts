@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, Output } from '@angular/core';
+import { Component, EventEmitter, Input, Output, input } from '@angular/core';
 
 @Component({
   selector: 'app-button',
@@ -11,12 +11,13 @@ import { Component, EventEmitter, Input, Output } from '@angular/core';
       class="bg-blue-500 hover:bg-blue-600 rounded text-white font-bold py-2 px-4"
       (click)="onClick($event)"
     >
-      {{ text }}
+      {{ text() }}
     </button>
   `,
 })
 export class ButtonComponent {
-  @Input() text!: string;
+  text = input('');
+  outline = input(false);
   @Output() click = new EventEmitter<MouseEvent>();
 
   onClick(event: MouseEvent): void {

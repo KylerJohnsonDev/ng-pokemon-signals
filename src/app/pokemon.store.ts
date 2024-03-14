@@ -13,6 +13,7 @@ import { PokemonService } from './pokemon.service';
 import {
   EMPTY,
   catchError,
+  concatMap,
   debounceTime,
   forkJoin,
   pipe,
@@ -34,6 +35,7 @@ interface PokemonState {
   loadPokemonError: string | undefined;
   loadTypesError: string | undefined;
   pokemonSearchResults: string[];
+  favoritePokemon: any[];
 }
 
 const initialPokemonState: PokemonState = {
@@ -44,6 +46,7 @@ const initialPokemonState: PokemonState = {
   loadPokemonError: undefined,
   loadTypesError: undefined,
   pokemonSearchResults: [...pokemonNames],
+  favoritePokemon: [],
 };
 
 export const PokemonStore = signalStore(
@@ -114,6 +117,12 @@ export const PokemonStore = signalStore(
         }),
       ),
     ),
+    addToFavorites: async (pokemon: Pokemon, userId: string) => {
+      const favoritePokemon = await pokemonService.addPokemonToFavorites(
+        pokemon,
+        userId,
+      );
+    },
   })),
   withHooks({
     onInit(store) {

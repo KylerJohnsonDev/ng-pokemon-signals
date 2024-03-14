@@ -19,10 +19,11 @@ import { MatInputModule } from '@angular/material/input';
   selector: 'app-pokemon',
   standalone: true,
   template: `
-    <form class="sticky w-full">
+    <form class="sticky w-full px-4">
       <mat-form-field class="w-full">
         <mat-label>Pokemon Search</mat-label>
         <input
+          class="ring-0 focus:ring-0"
           type="text"
           placeholder="Start typing a Pokemon name..."
           aria-label="Pokemon Name Search"

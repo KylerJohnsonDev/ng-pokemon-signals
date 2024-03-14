@@ -7,6 +7,8 @@ import { TypePillComponent } from 'src/app/components/type-pill.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
 import { MAX_POKEMON_ID } from '../../utils/pokemon-utils';
 import { ErrorBannerComponent } from '../../components/error-banner.component';
+import { Pokemon } from 'src/app/pokemon.model';
+import { authStore } from 'src/app/auth.store';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -35,9 +37,23 @@ import { ErrorBannerComponent } from '../../components/error-banner.component';
           />
         </section>
         <section class="flex flex-col gap-4">
-          <h1 class="text-2xl capitalize mb-2">
-            {{ pokemonStore.pokemon()?.name }}
-          </h1>
+          <div class="flex gap-4">
+            <h1 class="text-2xl capitalize mb-2">
+              {{ pokemonStore.pokemon()?.name }}
+            </h1>
+            <button
+              type="button"
+              class="px-3 py-2 text-xs font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+              (click)="
+                addToFavorites(
+                  pokemonStore?.pokemon(),
+                  authStore.session()?.user?.id
+                )
+              "
+            >
+              Add to favorites
+            </button>
+          </div>
           <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
             <p>Type:</p>
             <div class="flex flex-row flex-wrap gap-2 max-w-full">
@@ -97,6 +113,7 @@ import { ErrorBannerComponent } from '../../components/error-banner.component';
 export class PokemonTypeToolComponent {
   @HostBinding('class') class = 'flex flex-col grow';
   readonly pokemonStore = inject(PokemonStore);
+  readonly authStore = inject(authStore);
 
   onPrevious(): void {
     const identifier = this.pokemonStore.currentPokemonIdentifier();
@@ -112,5 +129,9 @@ export class PokemonTypeToolComponent {
       const nextPokemonId = identifier + 1;
       this.pokemonStore.loadPokemonByIdentifier(nextPokemonId);
     }
+  }
+
+  addToFavorites(pokemon: Pokemon, userId: string): void {
+    this.pokemonStore.addToFavorites(pokemon, userId);
   }
 }
