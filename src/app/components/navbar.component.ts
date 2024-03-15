@@ -22,7 +22,7 @@ import { RouterModule } from '@angular/router';
         <button
           data-collapse-toggle="navbar-default"
           type="button"
-          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-600"
+          class="inline-flex items-center p-2 w-10 h-10 justify-center text-sm text-gray-500 rounded-lg md:hidden focus:outline-none focus:ring-2 focus:ring-gray-600"
           aria-controls="navbar-default"
           aria-expanded="false"
         >
@@ -71,7 +71,7 @@ import { RouterModule } from '@angular/router';
                 <a
                   routerLink="/favorite-pokemon"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
+                  class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
                   >Favorites</a
                 >
               </li>
@@ -83,7 +83,7 @@ import { RouterModule } from '@angular/router';
                 <a
                   routerLink="/profile"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
+                  class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
                   >Profile</a
                 >
               </li>
@@ -91,7 +91,7 @@ import { RouterModule } from '@angular/router';
                 <a
                   routerLink="/login"
                   (click)="authStore.signOut()"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0e"
+                  class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0e"
                   >Sign out</a
                 >
               </li>
@@ -100,7 +100,7 @@ import { RouterModule } from '@angular/router';
                 <a
                   routerLink="/login"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
-                  class="block py-2 px-3 text-white rounded hover:bg-gray-100 md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
+                  class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
                   >Sign In</a
                 >
               </li>

@@ -14,9 +14,12 @@ import { CardComponent } from '../components/card.component';
     @if (pokemonStore.favoritePokemon().length === 0) {
       <h1 class="text-4xl font-bold">No favorite Pokemon</h1>
     } @else {
-      <div class="flex flex-wrap gap-4 justify-center">
+      <div
+        class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4"
+      >
         @for (pokemon of pokemonStore.favoritePokemon(); track pokemon.id) {
           <app-card
+            class="h-auto max-w-full"
             [imageUrl]="pokemon.url_to_pokemon_image"
             [cardClickUrl]="'/pokemon/' + pokemon.pokemon_name"
             [imageAlt]="pokemon.pokemon_name"

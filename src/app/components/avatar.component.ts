@@ -28,14 +28,17 @@ import { JsonPipe } from '@angular/common';
 
     <div
       id="userDropdown"
-      class="z-10 hidden divide-y rounded-lg shadow w-44 bg-gray-800 divide-gray-600"
+      class="z-10 hidden divide-y rounded-lg shadow w-44 bg-gray-800 divide-gray-600 border-gray-700 border-[1px]"
     >
       <div class="px-4 py-3 text-sm text-white">
         <div class="font-medium truncate">
           {{ authStore.user()?.email ?? 'anonymous@whoknows.com' }}
         </div>
       </div>
-      <ul class="py-2 text-sm text-gray-200" aria-labelledby="avatarButton">
+      <ul
+        class="py-2 text-sm text-gray-200 border-gray-700"
+        aria-labelledby="avatarButton"
+      >
         <li>
           <a
             routerLink="/profile"
