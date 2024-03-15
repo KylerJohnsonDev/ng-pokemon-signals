@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, effect, input } from '@angular/core';
+import { Component, EventEmitter, Output, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
@@ -9,10 +9,14 @@ import { RouterModule } from '@angular/router';
   template: `
     <a
       [routerLink]="[cardClickUrl() ? cardClickUrl() : '']"
-      class="block max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700"
+      class="block border rounded-lg shadow bg-gray-800 border-gray-700"
     >
       <a>
-        <img class="rounded-t-lg" [src]="imageUrl()" [alt]="imageAlt()" />
+        <img
+          class="rounded-t-lg w-full"
+          [src]="imageUrl()"
+          [alt]="imageAlt()"
+        />
       </a>
       <div class="p-5 flex flex-col items-center">
         <a>
@@ -49,6 +53,8 @@ export class CardComponent {
   buttonText = input<string>();
   cardClickUrl = input<string | null>(null);
   @Output() buttonClick = new EventEmitter();
+
+  constructor(private router: RouterModule) {}
 
   buttonClickHandler(e: MouseEvent): void {
     e.stopPropagation();
