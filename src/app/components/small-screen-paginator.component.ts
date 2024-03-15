@@ -26,13 +26,10 @@ import {Component, EventEmitter, Output} from '@angular/core';
       <span class="sr-only">Next Icon Button</span>
     </button>
   `,
-  styles: `
-    :host {
-    display: flex;
-    justify-content: space-between;
-    width: 100%;
+  styles: ``,
+  host: {
+    class: 'flex justify-between w-full',
   }
-  `
 })
 export class SmallScreenPaginatorComponent {
   @Output() previous = new EventEmitter<unknown>();

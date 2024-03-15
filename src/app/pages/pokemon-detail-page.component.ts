@@ -32,17 +32,16 @@ import {SmallScreenObserverStore} from "../small-screen-observer.store";
             [alt]="pokemonStore.pokemon()?.name"
           />
 
-          @defer (when !breakpointObserver.isSmallScreen()) {
-            @if (!breakpointObserver.isSmallScreen()) {
+          @if (!smallScreenObserver.isSmallScreen()) {
+            @defer (when !smallScreenObserver.isSmallScreen()) {
               <app-paginator
                 (previous)="onPrevious()"
                 (reset)="pokemonStore.loadPokemonByIdentifier(1)"
                 (next)="onNext()"
               />
             }
-          }
-          @defer (when breakpointObserver.isSmallScreen()) {
-            @if (breakpointObserver.isSmallScreen()) {
+          } @else {
+            @defer (when smallScreenObserver.isSmallScreen()) {
               <app-small-screen-paginator
                 (previous)="onPrevious()"
                 (next)="onNext()"/>
@@ -119,7 +118,7 @@ export class PokemonDetailPageComponent {
   iden = computed(() => this.id() ?? 'bulbasaur');
   readonly pokemonStore = inject(PokemonStore);
   readonly authStore = inject(authStore);
-  readonly breakpointObserver = inject(SmallScreenObserverStore);
+  readonly smallScreenObserver = inject(SmallScreenObserverStore);
 
   constructor() {
     this.pokemonStore.loadPokemonByIdentifier(this.iden);
