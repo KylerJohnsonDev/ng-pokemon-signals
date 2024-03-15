@@ -1,3 +1,20 @@
+export interface PokemonQuery {
+  limit: number;
+  offset: number;
+}
+
+export interface PokemonCollectionResponse {
+  count: number;
+  next: string;
+  previous: any;
+  results: PokemonCollectionItem[];
+}
+
+export interface PokemonCollectionItem {
+  name: string;
+  url: string;
+}
+
 export interface Pokemon {
   abilities: Ability[];
   base_experience: number;
