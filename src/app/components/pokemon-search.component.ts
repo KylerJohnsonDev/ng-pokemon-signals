@@ -1,23 +1,26 @@
-import { Component, HostBinding, inject } from '@angular/core';
-
-import { PokemonStore } from '../../pokemon.store';
-
-import { MAX_POKEMON_ID } from '../../utils/pokemon-utils';
-import { RouterModule } from '@angular/router';
-import { MatFormFieldModule } from '@angular/material/form-field';
-import { MatAutocompleteModule } from '@angular/material/autocomplete';
 import { TitleCasePipe } from '@angular/common';
+import { Component, inject } from '@angular/core';
 import {
   FormControl,
   FormGroup,
   NonNullableFormBuilder,
   ReactiveFormsModule,
 } from '@angular/forms';
+import { MatAutocompleteModule } from '@angular/material/autocomplete';
+import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { PokemonStore } from '../pokemon.store';
 
 @Component({
-  selector: 'app-pokemon',
+  selector: 'app-pokemon-search',
   standalone: true,
+  imports: [
+    MatFormFieldModule,
+    MatAutocompleteModule,
+    TitleCasePipe,
+    ReactiveFormsModule,
+    MatInputModule,
+  ],
   template: `
     <form class="sticky w-full px-4">
       <mat-form-field class="w-full">
@@ -42,19 +45,9 @@ import { MatInputModule } from '@angular/material/input';
         </mat-autocomplete>
       </mat-form-field>
     </form>
-    <router-outlet></router-outlet>
   `,
-  imports: [
-    RouterModule,
-    MatFormFieldModule,
-    MatAutocompleteModule,
-    TitleCasePipe,
-    ReactiveFormsModule,
-    MatInputModule,
-  ],
 })
-export class PokemonLayoutComponent {
-  @HostBinding('class') class = 'flex flex-col grow';
+export class PokemonSearchComponent {
   pokemonSearchForm: FormGroup;
   readonly pokemonStore = inject(PokemonStore);
 

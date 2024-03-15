@@ -1,14 +1,15 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostBinding, computed, inject, input } from '@angular/core';
 import { ButtonComponent } from 'src/app/components/button.component';
-import { PokemonStore } from '../../pokemon.store';
-import { PokemonTypeLookupPipe } from '../../utils/pokemon-type-lookup.pipe';
+import { PokemonStore } from '../pokemon.store';
+import { PokemonTypeLookupPipe } from '../utils/pokemon-type-lookup.pipe';
 import { TypePillComponent } from 'src/app/components/type-pill.component';
 import { PaginatorComponent } from 'src/app/components/paginator.component';
-import { MAX_POKEMON_ID } from '../../utils/pokemon-utils';
-import { ErrorBannerComponent } from '../../components/error-banner.component';
+import { MAX_POKEMON_ID } from '../utils/pokemon-utils';
+import { ErrorBannerComponent } from '../components/error-banner.component';
 import { Pokemon } from 'src/app/pokemon.model';
 import { authStore } from 'src/app/auth.store';
+import { PokemonSearchComponent } from '../components/pokemon-search.component';
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -18,6 +19,7 @@ import { authStore } from 'src/app/auth.store';
       @if (pokemonStore.errors().length > 0) {
         <app-error-banner [errorMessages]="pokemonStore.errors()" />
       }
+      <app-pokemon-search />
       <div class="flex flex-col lg:flex-row lg:items-center gap-4 p-4">
         <section class="flex flex-col items-center">
           <img
@@ -105,9 +107,10 @@ import { authStore } from 'src/app/auth.store';
     TypePillComponent,
     PaginatorComponent,
     ErrorBannerComponent,
+    PokemonSearchComponent,
   ],
 })
-export class PokemonTypeToolComponent {
+export class PokemonDetailPageComponent {
   @HostBinding('class') class = 'flex flex-col grow';
   id = input<string | number>();
   iden = computed(() => this.id() ?? 'bulbasaur');

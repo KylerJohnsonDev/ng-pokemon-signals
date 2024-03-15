@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { PokemonLayoutComponent } from './app/pages/pokemon/pokemon-layout.component';
 import { LoginPageComponent } from './app/pages/login-page.component';
 
 export const routes: Routes = [
@@ -18,29 +17,24 @@ export const routes: Routes = [
       import('./app/pages/favorite-pokemon.component').then(
         (m) => m.FavoritePokemonPageComponent,
       ),
+    title: 'Favorite Pokemon',
+  },
+  {
+    path: 'pokemon/:id',
+    loadComponent: () =>
+      import('./app/pages/pokemon-detail-page.component').then(
+        (m) => m.PokemonDetailPageComponent,
+      ),
+    title: 'Pokemon Detail',
+    data: { animation: 'PokemonTypeToolPage' },
   },
   {
     path: 'pokemon',
-    component: PokemonLayoutComponent,
-    children: [
-      {
-        path: ':id',
-        loadComponent: () =>
-          import('./app/pages/pokemon/pokemon-type-tool.component').then(
-            (m) => m.PokemonTypeToolComponent,
-          ),
-        title: 'Pokemon Detail',
-        data: { animation: 'PokemonTypeToolPage' },
-      },
-      {
-        path: '',
-        loadComponent: () =>
-          import('./app/pages/pokemon/browse-pokemon-page.component').then(
-            (m) => m.BrowsePokemonPageComponent,
-          ),
-        pathMatch: 'full',
-      },
-    ],
+    loadComponent: () =>
+      import('./app/pages/browse-pokemon-page.component').then(
+        (m) => m.BrowsePokemonPageComponent,
+      ),
+    pathMatch: 'full',
   },
   { path: '', redirectTo: '/pokemon', pathMatch: 'full' },
   { path: '**', redirectTo: '/pokemon' },
