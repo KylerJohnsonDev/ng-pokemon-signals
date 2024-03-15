@@ -1,38 +1,13 @@
-import {
-  getState,
-  patchState,
-  signalStore,
-  withComputed,
-  withHooks,
-  withMethods,
-  withState,
-} from '@ngrx/signals';
-import { rxMethod } from '@ngrx/signals/rxjs-interop';
-import {
-  FavoritePokemon,
-  Pokemon,
-  PokemonCollectionItem,
-  PokemonQuery,
-  TypeInformation,
-} from './pokemon.model';
-import { computed, effect, inject } from '@angular/core';
-import { PokemonService } from './pokemon.service';
-import {
-  EMPTY,
-  catchError,
-  debounceTime,
-  forkJoin,
-  pipe,
-  switchMap,
-  tap,
-} from 'rxjs';
-import {
-  getUniqueGoodAgainstBadAgainstTypes,
-  pokemonNames,
-} from './utils/pokemon-utils';
-import { tapResponse } from '@ngrx/operators';
-import { HttpErrorResponse } from '@angular/common/http';
-import { authStore } from './auth.store';
+import {patchState, signalStore, withComputed, withHooks, withMethods, withState,} from '@ngrx/signals';
+import {rxMethod} from '@ngrx/signals/rxjs-interop';
+import {FavoritePokemon, Pokemon, PokemonCollectionItem, PokemonQuery, TypeInformation,} from './pokemon.model';
+import {computed, inject} from '@angular/core';
+import {PokemonService} from './pokemon.service';
+import {catchError, debounceTime, EMPTY, forkJoin, pipe, switchMap, tap,} from 'rxjs';
+import {getUniqueGoodAgainstBadAgainstTypes, pokemonNames,} from './utils/pokemon-utils';
+import {tapResponse} from '@ngrx/operators';
+import {HttpErrorResponse} from '@angular/common/http';
+import {authStore} from './auth.store';
 
 // TODO: break this up into more localized stores
 interface PokemonState {
@@ -77,15 +52,15 @@ const initialPokemonState: PokemonState = {
 
 export const PokemonStore = signalStore(
   { providedIn: 'root' },
-  withState(initialPokemonState), // TODO: either initalize with different values for smaller screens or use a different store or update value in paginatePokemonCollection method
+  withState(initialPokemonState),
   withComputed((state) => ({
     currentPokemonIdentifier: computed(() => Number(state.pokemon()?.id)),
     isFavorite: computed(() => {
       const pokemonId = state.pokemon()?.id;
-      const isFavorite = state
+      /* return is Pokemon favorite */
+      return state
         .favoritePokemon()
         ?.some((fav) => fav?.pokemon_id === pokemonId);
-      return isFavorite;
     }),
     errors: computed(() => {
       const errors: string[] = [];

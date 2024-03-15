@@ -1,17 +1,17 @@
-import { CommonModule } from '@angular/common';
-import {Component, HostBinding, computed, inject, input, OnInit} from '@angular/core';
-import { ButtonComponent } from 'src/app/components/button.component';
-import { PokemonStore } from '../pokemon.store';
-import { PokemonTypeLookupPipe } from '../utils/pokemon-type-lookup.pipe';
-import { TypePillComponent } from 'src/app/components/type-pill.component';
-import { PaginatorComponent } from 'src/app/components/paginator.component';
-import { MAX_POKEMON_ID } from '../utils/pokemon-utils';
-import { ErrorBannerComponent } from '../components/error-banner.component';
-import { authStore } from 'src/app/auth.store';
-import { PokemonSearchComponent } from '../components/pokemon-search.component';
-import {distinctUntilChanged, tap} from "rxjs";
-import { BreakpointObserver, Breakpoints } from '@angular/cdk/layout';
+import {CommonModule} from '@angular/common';
+import {Component, HostBinding, computed, inject, input} from '@angular/core';
+import {ButtonComponent} from 'src/app/components/button.component';
+import {PokemonStore} from '../pokemon.store';
+import {PokemonTypeLookupPipe} from '../utils/pokemon-type-lookup.pipe';
+import {TypePillComponent} from 'src/app/components/type-pill.component';
+import {PaginatorComponent} from 'src/app/components/paginator.component';
+import {MAX_POKEMON_ID} from '../utils/pokemon-utils';
+import {ErrorBannerComponent} from '../components/error-banner.component';
+import {authStore} from 'src/app/auth.store';
+import {PokemonSearchComponent} from '../components/pokemon-search.component';
 import {SmallScreenPaginatorComponent} from "../components/small-screen-paginator.component";
+import {SmallScreenObserverStore} from "../small-screen-observer.store";
+
 @Component({
   selector: 'app-pokemon-detail',
   standalone: true,
@@ -31,21 +31,24 @@ import {SmallScreenPaginatorComponent} from "../components/small-screen-paginato
             "
             [alt]="pokemonStore.pokemon()?.name"
           />
-          @if (currentBreakpoint !== Breakpoints.XSmall) {
-            @defer (when currentBreakpoint !== Breakpoints.XSmall) {
+
+          @defer (when !breakpointObserver.isSmallScreen()) {
+            @if (!breakpointObserver.isSmallScreen()) {
               <app-paginator
                 (previous)="onPrevious()"
                 (reset)="pokemonStore.loadPokemonByIdentifier(1)"
                 (next)="onNext()"
               />
             }
-          } @else {
-            @defer (when currentBreakpoint === Breakpoints.XSmall) {
+          }
+          @defer (when breakpointObserver.isSmallScreen()) {
+            @if (breakpointObserver.isSmallScreen()) {
               <app-small-screen-paginator
                 (previous)="onPrevious()"
                 (next)="onNext()"/>
             }
           }
+
         </section>
         <section class="flex flex-col gap-4">
           <div class="flex gap-4">
@@ -110,43 +113,16 @@ import {SmallScreenPaginatorComponent} from "../components/small-screen-paginato
     SmallScreenPaginatorComponent,
   ],
 })
-export class PokemonDetailPageComponent implements OnInit {
+export class PokemonDetailPageComponent {
   @HostBinding('class') class = 'flex flex-col grow';
   id = input<string | number>();
   iden = computed(() => this.id() ?? 'bulbasaur');
   readonly pokemonStore = inject(PokemonStore);
   readonly authStore = inject(authStore);
+  readonly breakpointObserver = inject(SmallScreenObserverStore);
 
-
-  Breakpoints = Breakpoints;
-  currentBreakpoint:string = '';
-
-  readonly breakpoint$ = this.breakpointObserver
-    .observe([Breakpoints.Large, Breakpoints.Medium, Breakpoints.Small, Breakpoints.XSmall])
-    .pipe(
-      tap(value => console.log(value)),
-      distinctUntilChanged()
-    );
-
-  constructor(private breakpointObserver: BreakpointObserver) {
+  constructor() {
     this.pokemonStore.loadPokemonByIdentifier(this.iden);
-  }
-  ngOnInit(): void {
-    this.breakpoint$.subscribe(() =>
-      this.breakpointChanged()
-    );
-  }
-
-  private breakpointChanged(): void {
-    if(this.breakpointObserver.isMatched(Breakpoints.Large)) {
-      this.currentBreakpoint = Breakpoints.Large;
-    } else if(this.breakpointObserver.isMatched(Breakpoints.Medium)) {
-      this.currentBreakpoint = Breakpoints.Medium;
-    } else if(this.breakpointObserver.isMatched(Breakpoints.Small)) {
-      this.currentBreakpoint = Breakpoints.Small;
-    } else if(this.breakpointObserver.isMatched(Breakpoints.XSmall)) {
-      this.currentBreakpoint = Breakpoints.XSmall;
-    }
   }
 
   onPrevious(): void {
