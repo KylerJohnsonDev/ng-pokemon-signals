@@ -188,7 +188,6 @@ export const PokemonStore = signalStore(
               pokemon,
               _authStore.session()?.user.id ?? '',
             );
-          console.log(addedFavoritePokemon);
           const favoritePokemon = [
             ...state.favoritePokemon(),
             addedFavoritePokemon,

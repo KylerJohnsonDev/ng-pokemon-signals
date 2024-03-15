@@ -1,12 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Output, input } from '@angular/core';
+import { Component, EventEmitter, Output, effect, input } from '@angular/core';
+import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-card',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   template: `
-    <div class="max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700">
+    <a
+      [routerLink]="[cardClickUrl() ? cardClickUrl() : '']"
+      class="block max-w-sm border rounded-lg shadow bg-gray-800 border-gray-700"
+    >
       <a>
         <img class="rounded-t-lg" [src]="imageUrl()" [alt]="imageAlt()" />
       </a>
@@ -15,7 +19,7 @@ import { Component, EventEmitter, Output, input } from '@angular/core';
           <h5
             class="text-center mb-2 text-2xl font-bold tracking-tight text-white"
           >
-            {{ title() }}
+            {{ title() | titlecase }}
           </h5>
         </a>
         @if (description()?.length) {
@@ -26,14 +30,14 @@ import { Component, EventEmitter, Output, input } from '@angular/core';
         }
         @if (showButton()) {
           <a
-            (click)="buttonClick.emit()"
+            (click)="buttonClickHandler($event)"
             class="max-w-fit margin-auto cursor-pointer inline-flex items-center px-3 py-2 text-sm font-medium text-center text-white bg-blue-700 rounded-lg hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
           >
             {{ buttonText() }}
           </a>
         }
       </div>
-    </div>
+    </a>
   `,
 })
 export class CardComponent {
@@ -43,5 +47,12 @@ export class CardComponent {
   imageAlt = input<string>();
   showButton = input<boolean>(true);
   buttonText = input<string>();
+  cardClickUrl = input<string | null>(null);
   @Output() buttonClick = new EventEmitter();
+
+  buttonClickHandler(e: MouseEvent): void {
+    e.stopPropagation();
+    e.preventDefault();
+    this.buttonClick.emit();
+  }
 }

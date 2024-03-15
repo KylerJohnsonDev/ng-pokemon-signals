@@ -14,6 +14,7 @@ import { PokemonImagePipe } from 'src/app/utils/pokemon-image.pipe';
     <div class="flex flex-wrap gap-4 justify-center my-4">
       @for (item of pokemonStore.pokemonCollection(); track item.name) {
         <app-card
+          [cardClickUrl]="'/pokemon/' + item.name"
           [imageUrl]="item.url | pokemonImageUrlFromUrl"
           [imageAlt]="item.name"
           [title]="item.name"

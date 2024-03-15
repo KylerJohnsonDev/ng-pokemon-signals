@@ -65,7 +65,6 @@ export class PokemonService {
       ?.from('favorite_pokemon')
       .select('*')
       .eq('user_id', userId);
-    console.log(res);
     return res?.data as unknown as FavoritePokemon[];
   }
 
