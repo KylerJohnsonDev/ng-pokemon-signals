@@ -1,11 +1,11 @@
-import { CommonModule } from '@angular/common';
+import {CommonModule, NgOptimizedImage} from '@angular/common';
 import { Component, EventEmitter, Output, input } from '@angular/core';
 import { RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-card',
   standalone: true,
-  imports: [CommonModule, RouterModule],
+  imports: [CommonModule, RouterModule, NgOptimizedImage],
   template: `
     <a
       [routerLink]="[cardClickUrl() ? cardClickUrl() : '']"
@@ -14,9 +14,10 @@ import { RouterModule } from '@angular/router';
       <a>
         <img
           class="rounded-t-lg w-full"
-          [src]="imageUrl()"
+          [ngSrc]="imageUrl()"
           [alt]="imageAlt()"
-        />
+          width="150" height="150"
+        priority/>
       </a>
       <div class="p-5 flex flex-col items-center">
         <a>

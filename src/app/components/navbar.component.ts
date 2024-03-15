@@ -2,11 +2,12 @@ import { Component, inject } from '@angular/core';
 import { authStore } from '../auth.store';
 import { AvatarComponent } from './avatar.component';
 import { RouterModule } from '@angular/router';
+import {NgOptimizedImage} from "@angular/common";
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [AvatarComponent, RouterModule],
+  imports: [AvatarComponent, RouterModule, NgOptimizedImage],
   template: `
     <nav class="bg-gray-900">
       <div class="flex flex-wrap items-center justify-between mx-auto p-4">
@@ -15,7 +16,7 @@ import { RouterModule } from '@angular/router';
           class="flex items-center space-x-3 rtl:space-x-reverse"
         >
           <a class="text-xl" routerLink="/">
-            <img class="h-16" src="/assets/pokemon.png" alt="Pokemon" />
+            <img class="h-16" ngSrc="/assets/pokemon.png" width="174" height="64" alt="Pokemon" priority/>
           </a>
         </a>
 
@@ -54,7 +55,7 @@ import { RouterModule } from '@angular/router';
                 [routerLinkActiveOptions]="{ exact: true }"
                 class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
-                >Browse</a
+              >Browse</a
               >
             </li>
             <li>
@@ -63,7 +64,7 @@ import { RouterModule } from '@angular/router';
                 routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                 class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
-                >Lookup Tool</a
+              >Lookup Tool</a
               >
             </li>
             @if (authStore.session()) {
@@ -72,7 +73,7 @@ import { RouterModule } from '@angular/router';
                   routerLink="/favorite-pokemon"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                  >Favorites</a
+                >Favorites</a
                 >
               </li>
               <li class="hidden md:block">
@@ -84,7 +85,7 @@ import { RouterModule } from '@angular/router';
                   routerLink="/profile"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                  >Profile</a
+                >Profile</a
                 >
               </li>
               <li class="md:hidden">
@@ -92,7 +93,7 @@ import { RouterModule } from '@angular/router';
                   routerLink="/login"
                   (click)="authStore.signOut()"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0e"
-                  >Sign out</a
+                >Sign out</a
                 >
               </li>
             } @else {
@@ -101,7 +102,7 @@ import { RouterModule } from '@angular/router';
                   routerLink="/login"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                  >Sign In</a
+                >Sign In</a
                 >
               </li>
             }
