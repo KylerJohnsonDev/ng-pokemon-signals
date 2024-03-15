@@ -1,15 +1,16 @@
-import { CommonModule } from '@angular/common';
-import { Component, HostBinding, computed, inject, input } from '@angular/core';
-import { ButtonComponent } from 'src/app/components/button.component';
-import { PokemonStore } from '../pokemon.store';
-import { PokemonTypeLookupPipe } from '../utils/pokemon-type-lookup.pipe';
-import { TypePillComponent } from 'src/app/components/type-pill.component';
-import { PaginatorComponent } from 'src/app/components/paginator.component';
-import { MAX_POKEMON_ID } from '../utils/pokemon-utils';
-import { ErrorBannerComponent } from '../components/error-banner.component';
-import { Pokemon } from 'src/app/pokemon.model';
-import { authStore } from 'src/app/auth.store';
-import { PokemonSearchComponent } from '../components/pokemon-search.component';
+import {CommonModule} from '@angular/common';
+import {Component, HostBinding, computed, inject, input} from '@angular/core';
+import {ButtonComponent} from 'src/app/components/button.component';
+import {PokemonStore} from '../pokemon.store';
+import {PokemonTypeLookupPipe} from '../utils/pokemon-type-lookup.pipe';
+import {TypePillComponent} from 'src/app/components/type-pill.component';
+import {PaginatorComponent} from 'src/app/components/paginator.component';
+import {MAX_POKEMON_ID} from '../utils/pokemon-utils';
+import {ErrorBannerComponent} from '../components/error-banner.component';
+import {authStore} from 'src/app/auth.store';
+import {PokemonSearchComponent} from '../components/pokemon-search.component';
+import {SmallScreenPaginatorComponent} from "../components/small-screen-paginator.component";
+import {SmallScreenObserverStore} from "../small-screen-observer.store";
 
 @Component({
   selector: 'app-pokemon-detail',
@@ -17,9 +18,9 @@ import { PokemonSearchComponent } from '../components/pokemon-search.component';
   template: `
     <main class="grow overflow-auto">
       @if (pokemonStore.errors().length > 0) {
-        <app-error-banner [errorMessages]="pokemonStore.errors()" />
+        <app-error-banner [errorMessages]="pokemonStore.errors()"/>
       }
-      <app-pokemon-search />
+      <app-pokemon-search/>
       <div class="flex flex-col lg:flex-row lg:items-center gap-4 p-4">
         <section class="flex flex-col items-center">
           <img
@@ -30,13 +31,23 @@ import { PokemonSearchComponent } from '../components/pokemon-search.component';
             "
             [alt]="pokemonStore.pokemon()?.name"
           />
-          <app-paginator
-            class="hidden lg:block"
-            [isMobile]="false"
-            (previous)="onPrevious()"
-            (reset)="pokemonStore.loadPokemonByIdentifier(1)"
-            (next)="onNext()"
-          />
+
+          @if (!smallScreenObserver.isSmallScreen()) {
+            @defer (when !smallScreenObserver.isSmallScreen()) {
+              <app-paginator
+                (previous)="onPrevious()"
+                (reset)="pokemonStore.loadPokemonByIdentifier(1)"
+                (next)="onNext()"
+              />
+            }
+          } @else {
+            @defer (when smallScreenObserver.isSmallScreen()) {
+              <app-small-screen-paginator
+                (previous)="onPrevious()"
+                (next)="onNext()"/>
+            }
+          }
+
         </section>
         <section class="flex flex-col gap-4">
           <div class="flex gap-4">
@@ -56,10 +67,8 @@ import { PokemonSearchComponent } from '../components/pokemon-search.component';
           <div class="flex flex-col lg:flex-row gap-2 lg:items-center">
             <p>Type:</p>
             <div class="flex flex-row flex-wrap gap-2 max-w-full">
-              @for (
-                type of pokemonStore.pokemon()?.types;
-                track type.type.name
-              ) {
+              @for (type of pokemonStore.pokemon()?.types;
+                track type.type.name) {
                 <app-type-pill [text]="type.type.name"></app-type-pill>
               } @empty {
                 <span>No Data</span>
@@ -91,14 +100,6 @@ import { PokemonSearchComponent } from '../components/pokemon-search.component';
         </section>
       </div>
     </main>
-    <footer>
-      <app-paginator
-        [isMobile]="true"
-        (previous)="onPrevious()"
-        (reset)="pokemonStore.loadPokemonByIdentifier(1)"
-        (next)="onNext()"
-      />
-    </footer>
   `,
   imports: [
     CommonModule,
@@ -108,6 +109,7 @@ import { PokemonSearchComponent } from '../components/pokemon-search.component';
     PaginatorComponent,
     ErrorBannerComponent,
     PokemonSearchComponent,
+    SmallScreenPaginatorComponent,
   ],
 })
 export class PokemonDetailPageComponent {
@@ -116,6 +118,7 @@ export class PokemonDetailPageComponent {
   iden = computed(() => this.id() ?? 'bulbasaur');
   readonly pokemonStore = inject(PokemonStore);
   readonly authStore = inject(authStore);
+  readonly smallScreenObserver = inject(SmallScreenObserverStore);
 
   constructor() {
     this.pokemonStore.loadPokemonByIdentifier(this.iden);

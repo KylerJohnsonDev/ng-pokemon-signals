@@ -11,36 +11,22 @@ import { PokemonImagePipe } from 'src/app/utils/pokemon-image.pipe';
     class: 'h-full w-full',
   },
   template: `
-    <div
-      class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4"
-    >
-      @for (item of pokemonStore.pokemonCollection(); track item.name) {
-        <app-card
-          class="h-auto max-w-full"
-          [cardClickUrl]="'/pokemon/' + item.name"
-          [imageUrl]="item.url | pokemonImageUrlFromUrl"
-          [imageAlt]="item.name"
-          [title]="item.name"
-          [showButton]="false"
-        />
-      }
-    </div>
+
     <div class="flex flex-col items-center mb-4">
-      <!-- Help text -->
       <span class="text-sm text-gray-400">
         Showing
         <span class="font-semibold text-white">{{
-          pokemonStore.pokemonCollectionQuery().offset + 1
-        }}</span>
+            pokemonStore.pokemonCollectionQuery().offset + 1
+          }}</span>
         to
         <span class="font-semibold text-white">{{
-          pokemonStore.pokemonCollectionQuery().limit *
+            pokemonStore.pokemonCollectionQuery().limit *
             pokemonStore.currentPage()
-        }}</span>
+          }}</span>
         of
         <span class="font-semibold text-white">{{
-          pokemonStore.totalCount()
-        }}</span>
+            pokemonStore.totalCount()
+          }}</span>
         Entries
       </span>
       <div class="inline-flex mt-2 xs:mt-0">
@@ -88,6 +74,20 @@ import { PokemonImagePipe } from 'src/app/utils/pokemon-image.pipe';
           </svg>
         </button>
       </div>
+    </div>
+    <div
+      class="grid xs:grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4 p-4"
+    >
+      @for (item of pokemonStore.pokemonCollection(); track item.name) {
+        <app-card
+          class="h-auto max-w-full"
+          [cardClickUrl]="'/pokemon/' + item.name"
+          [imageUrl]="item.url | pokemonImageUrlFromUrl"
+          [imageAlt]="item.name"
+          [title]="item.name"
+          [showButton]="false"
+        />
+      }
     </div>
   `,
 })
