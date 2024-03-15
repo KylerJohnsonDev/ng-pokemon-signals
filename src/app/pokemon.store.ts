@@ -77,7 +77,7 @@ const initialPokemonState: PokemonState = {
 
 export const PokemonStore = signalStore(
   { providedIn: 'root' },
-  withState(initialPokemonState),
+  withState(initialPokemonState), // TODO: either initalize with different values for smaller screens or use a different store or update value in paginatePokemonCollection method
   withComputed((state) => ({
     currentPokemonIdentifier: computed(() => Number(state.pokemon()?.id)),
     isFavorite: computed(() => {

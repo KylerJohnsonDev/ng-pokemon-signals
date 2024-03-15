@@ -30,17 +30,17 @@ import { PokemonImagePipe } from 'src/app/utils/pokemon-image.pipe';
       <span class="text-sm text-gray-400">
         Showing
         <span class="font-semibold text-white">{{
-          pokemonStore.pokemonCollectionQuery().offset + 1
-        }}</span>
+            pokemonStore.pokemonCollectionQuery().offset + 1
+          }}</span>
         to
         <span class="font-semibold text-white">{{
-          pokemonStore.pokemonCollectionQuery().limit *
+            pokemonStore.pokemonCollectionQuery().limit *
             pokemonStore.currentPage()
-        }}</span>
+          }}</span>
         of
         <span class="font-semibold text-white">{{
-          pokemonStore.totalCount()
-        }}</span>
+            pokemonStore.totalCount()
+          }}</span>
         Entries
       </span>
       <div class="inline-flex mt-2 xs:mt-0">
@@ -88,6 +88,18 @@ import { PokemonImagePipe } from 'src/app/utils/pokemon-image.pipe';
           </svg>
         </button>
       </div>
+    </div>
+
+    <div class="flex flex-wrap gap-4 justify-center my-4">
+      @for (item of pokemonStore.pokemonCollection(); track item.name) {
+        <app-card
+          [cardClickUrl]="'/pokemon/' + item.name"
+          [imageUrl]="item.url | pokemonImageUrlFromUrl"
+          [imageAlt]="item.name"
+          [title]="item.name"
+          [showButton]="false"
+        />
+      }
     </div>
   `,
 })
