@@ -124,6 +124,33 @@ export const PokemonStore = signalStore(
           }),
         ),
       ),
+      paginatePokemonCollection: (direction: 'next' | 'previous') => {
+        if (direction === 'next') {
+          const nextOffset =
+            state.pokemonCollectionQuery().offset +
+            state.pokemonCollectionQuery().limit;
+          if (nextOffset >= state.totalCount()) return;
+          patchState(state, {
+            pokemonCollectionQuery: {
+              ...state.pokemonCollectionQuery(),
+              offset: nextOffset,
+            },
+            currentPage: state.currentPage() + 1,
+          });
+        } else {
+          if (state.pokemonCollectionQuery().offset === 0) return;
+          const previousOffset =
+            state.pokemonCollectionQuery().offset -
+            state.pokemonCollectionQuery().limit;
+          patchState(state, {
+            pokemonCollectionQuery: {
+              ...state.pokemonCollectionQuery(),
+              offset: previousOffset,
+            },
+            currentPage: state.currentPage() - 1,
+          });
+        }
+      },
       loadPokemonByIdentifier: rxMethod<string | number>(
         pipe(
           tap(() => patchState(state, { isLoadingPokemon: true })),
