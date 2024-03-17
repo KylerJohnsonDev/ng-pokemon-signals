@@ -32,6 +32,7 @@ import {SmallScreenObserverStore} from "../small-screen-observer.store";
             [alt]="pokemonStore.pokemon()?.name"
           />
 
+
           @if (!smallScreenObserver.isSmallScreen()) {
             @defer (when !smallScreenObserver.isSmallScreen()) {
               <app-paginator

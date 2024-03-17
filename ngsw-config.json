@@ -35,7 +35,7 @@
         "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/**"
       ],
       "cacheConfig": {
-        "strategy": "freshness",
+        "strategy": "performance",
         "maxSize": 20,
         "maxAge": "2d",
         "timeout": "5s"
