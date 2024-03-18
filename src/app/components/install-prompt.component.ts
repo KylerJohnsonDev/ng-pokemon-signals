@@ -77,6 +77,7 @@ export class InstallPromptComponent implements OnInit {
   }
 
   private loadModalPwa(): void {
+    /*Android device prompt*/
     if (this.platform.ANDROID) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
@@ -85,6 +86,7 @@ export class InstallPromptComponent implements OnInit {
       });
     }
 
+    /* iOS device */
     if (this.platform.IOS && this.platform.SAFARI) {
       const isInStandaloneMode = ('standalone' in window.navigator) && ((<any>window.navigator)['standalone']);
       if (!isInStandaloneMode) {
