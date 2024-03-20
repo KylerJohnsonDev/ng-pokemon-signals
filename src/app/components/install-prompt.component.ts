@@ -27,7 +27,7 @@ import {Platform} from "@angular/cdk/platform";
         </div>
       </div>
     }
-    @if (modalPwaPlatform === 'ANDROID') {
+    @if (modalPwaPlatform === 'ANDROID' && shouldInstall()) {
       <div id="toast-interactive"
            class="w-full p-4 text-gray-500 bg-white rounded-lg shadow"
            role="alert">
@@ -77,11 +77,10 @@ export class InstallPromptComponent implements OnInit {
 
   private loadModalPwa(): void {
     /*Android device prompt*/
-    if (this.platform.ANDROID && !this.installed) {
+    if (this.platform.ANDROID) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
         this.modalPwaEvent = event;
-        this.modalPwaEvent.prompt();
         this.modalPwaPlatform = 'ANDROID';
       });
     }
@@ -94,13 +93,15 @@ export class InstallPromptComponent implements OnInit {
       }
     }
   }
+  addToHomeScreen() {
+    this.modalPwaEvent.prompt();
+  }
+  public shouldInstall(): boolean {
+    return !this.isRunningStandalone() && this.modalPwaEvent !== undefined;
+  }
 
-  async addToHomeScreen() {
-    let result = await this.modalPwaEvent.userChoice;
-    if (result && result.outcome === 'accepted') {
-      this.installed = true;
-    }
-    this.modalPwaPlatform = undefined;
+  private isRunningStandalone(): boolean {
+    return (window.matchMedia('(display-mode: standalone)').matches);
   }
 
   closePwa(): void {
