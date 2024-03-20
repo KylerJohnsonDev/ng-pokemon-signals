@@ -66,7 +66,6 @@ import {Platform} from "@angular/cdk/platform";
   }
 })
 export class InstallPromptComponent implements OnInit {
-
   modalPwaEvent: any;
   modalPwaPlatform: string | undefined;
   platform = inject(Platform);
@@ -78,10 +77,11 @@ export class InstallPromptComponent implements OnInit {
 
   private loadModalPwa(): void {
     /*Android device prompt*/
-    if (this.platform.ANDROID) {
+    if (this.platform.ANDROID && !this.installed) {
       window.addEventListener('beforeinstallprompt', (event: any) => {
         event.preventDefault();
         this.modalPwaEvent = event;
+        this.modalPwaEvent.prompt();
         this.modalPwaPlatform = 'ANDROID';
       });
     }
@@ -96,7 +96,6 @@ export class InstallPromptComponent implements OnInit {
   }
 
   async addToHomeScreen() {
-    this.modalPwaEvent.prompt();
     let result = await this.modalPwaEvent.userChoice;
     if (result && result.outcome === 'accepted') {
       this.installed = true;
