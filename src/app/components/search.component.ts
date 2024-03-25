@@ -72,7 +72,7 @@ import { Router } from '@angular/router';
 
     <div
       [ngClass]="{ hidden: !isResultsVisible() }"
-      class="max-w-md mx-auto h-48 overflow-scroll text-sm font-medium border rounded-b-lg bg-gray-700 border-gray-600 text-white"
+      class="max-w-md mx-auto h-fit max-h-48 overflow-scroll text-sm font-medium border rounded-b-lg bg-gray-700 border-gray-600 text-white"
     >
       @for (pokemon of pokemonStore.pokemonSearchResults(); track pokemon) {
         <span
@@ -133,6 +133,7 @@ export class Search {
         const highlightedIndex = this.resultElements().findIndex((el) => {
           return el.nativeElement.classList.contains('highlighted');
         });
+
         this.resultElements()[highlightedIndex].nativeElement.classList.remove(
           'highlighted',
         );
@@ -144,6 +145,10 @@ export class Search {
         this.resultElements()[newIndex].nativeElement.classList.add(
           'highlighted',
         );
+        this.resultElements()[newIndex].nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
       }
     }
     if (e instanceof KeyboardEvent && e.key === 'ArrowUp') {
@@ -164,6 +169,10 @@ export class Search {
         this.resultElements()[newIndex].nativeElement.classList.add(
           'highlighted',
         );
+        this.resultElements()[newIndex].nativeElement.scrollIntoView({
+          behavior: 'smooth',
+          block: 'nearest',
+        });
       }
     }
     if (e instanceof KeyboardEvent && e.key === 'Enter') {
