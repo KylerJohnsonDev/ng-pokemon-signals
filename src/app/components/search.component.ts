@@ -121,7 +121,9 @@ export class Search {
   onKeyDown(e: Event): void {
     if (e instanceof KeyboardEvent && e.key === 'Escape') {
       this.isResultsVisible.update(() => false);
+      return;
     }
+
     if (e instanceof KeyboardEvent && e.key === 'ArrowDown') {
       const isAnyResultHighlighted = this.resultElements().some((el) => {
         return Array.from(el.nativeElement.classList).includes('highlighted');
@@ -150,8 +152,12 @@ export class Search {
           block: 'nearest',
         });
       }
+      return;
     }
     if (e instanceof KeyboardEvent && e.key === 'ArrowUp') {
+      // by default, arrow up will move cursor in input back to beginning of input
+      // this prevents that behavior
+      e.preventDefault();
       const isAnyResultHighlighted = this.resultElements().some((el) => {
         return Array.from(el.nativeElement.classList).includes('highlighted');
       });
@@ -174,11 +180,15 @@ export class Search {
           block: 'nearest',
         });
       }
+      return;
     }
     if (e instanceof KeyboardEvent && e.key === 'Enter') {
       const highlightedIndex = this.resultElements().findIndex((el) => {
         return Array.from(el.nativeElement.classList).includes('highlighted');
       });
+      if (highlightedIndex === -1) {
+        return;
+      }
       this.searchValueCtrl.setValue('');
       const highlightedElement = this.resultElements()[highlightedIndex];
       this.resultElements()[highlightedIndex].nativeElement.classList.remove(
@@ -189,6 +199,11 @@ export class Search {
         '/pokemon',
         highlightedElement.nativeElement.textContent.trim(),
       ]);
+      return;
+    }
+
+    if (e instanceof KeyboardEvent && e.key && !this.isResultsVisible()) {
+      this.isResultsVisible.update(() => true);
     }
   }
 
