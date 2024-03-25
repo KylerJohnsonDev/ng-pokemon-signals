@@ -2,23 +2,35 @@ import { Component, inject } from '@angular/core';
 import { authStore } from '../auth.store';
 import { AvatarComponent } from './avatar.component';
 import { RouterModule } from '@angular/router';
-import {NgOptimizedImage} from "@angular/common";
+import { NgOptimizedImage } from '@angular/common';
+import { Search } from './search.component';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
-  imports: [AvatarComponent, RouterModule, NgOptimizedImage],
+  imports: [AvatarComponent, RouterModule, NgOptimizedImage, Search],
   template: `
     <nav class="bg-gray-900">
       <div class="flex flex-wrap items-center justify-between mx-auto p-4">
         <a
           routerLink="/"
-          class="flex items-center space-x-3 rtl:space-x-reverse"
+          class="flex items-center space-x-3 rtl:space-x-reverse lg:mr-8"
         >
           <a class="text-xl" routerLink="/">
-            <img class="h-16" ngSrc="/assets/pokemon.png" width="174" height="64" alt="Pokemon" priority/>
+            <img
+              class="h-16"
+              ngSrc="/assets/pokemon.png"
+              width="174"
+              height="64"
+              alt="Pokemon"
+              priority
+            />
           </a>
         </a>
+
+        <app-search class="hidden lg:block grow" />
+
+        <div class="spacer grow"></div>
 
         <button
           data-collapse-toggle="navbar-default"
@@ -49,13 +61,16 @@ import {NgOptimizedImage} from "@angular/common";
             class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-700 rounded-lg bg-gray-800 md:bg-gray-900 md:flex-row md:items-center md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
           >
             <li>
+              <app-search class="lg:hidden grow" />
+            </li>
+            <li>
               <a
                 routerLink="/pokemon"
                 routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                 [routerLinkActiveOptions]="{ exact: true }"
                 class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
-              >Browse</a
+                >Browse</a
               >
             </li>
             <li>
@@ -64,7 +79,7 @@ import {NgOptimizedImage} from "@angular/common";
                 routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                 class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
-              >Lookup Tool</a
+                >Lookup Tool</a
               >
             </li>
             @if (authStore.session()) {
@@ -73,7 +88,7 @@ import {NgOptimizedImage} from "@angular/common";
                   routerLink="/favorite-pokemon"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                >Favorites</a
+                  >Favorites</a
                 >
               </li>
               <li class="hidden md:block">
@@ -85,7 +100,7 @@ import {NgOptimizedImage} from "@angular/common";
                   routerLink="/profile"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                >Profile</a
+                  >Profile</a
                 >
               </li>
               <li class="md:hidden">
@@ -93,7 +108,7 @@ import {NgOptimizedImage} from "@angular/common";
                   routerLink="/login"
                   (click)="authStore.signOut()"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0e"
-                >Sign out</a
+                  >Sign out</a
                 >
               </li>
             } @else {
@@ -102,7 +117,7 @@ import {NgOptimizedImage} from "@angular/common";
                   routerLink="/login"
                   routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                   class="block py-2 px-3 text-white rounded md:hover:bg-transparent md:border-0 md:hover:text-white md:p-0"
-                >Sign In</a
+                  >Sign In</a
                 >
               </li>
             }

@@ -1,11 +1,4 @@
-import {
-  Component,
-  HostBinding,
-  Signal,
-  inject,
-  viewChild,
-} from '@angular/core';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { Component, HostBinding, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
 import { ButtonComponent } from './components/button.component';
 import { SignalInputDirective } from './directives/input.directive';
@@ -21,7 +14,6 @@ import { NavbarComponent } from './components/navbar.component';
 import { InstallPromptComponent } from './components/install-prompt.component';
 import { SmallScreenObserverStore } from './small-screen-observer.store';
 import { Search } from './components/search.component';
-import { filter, fromEvent, tap } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -42,7 +34,7 @@ import { filter, fromEvent, tap } from 'rxjs';
   providers: [PokemonStore],
   template: `
     <app-navbar />
-    <app-search />
+    <!-- <app-search /> -->
     <main class="flex w-full overflow-auto grow">
       <router-outlet></router-outlet>
     </main>
@@ -56,27 +48,7 @@ export class AppComponent {
   readonly authStore = inject(authStore);
   readonly smallScreenObserver = inject(SmallScreenObserverStore);
 
-  searchComponent: Signal<Search | undefined> = viewChild(Search);
-
   constructor() {
     initFlowbite();
-
-    // TODO: consider moving this to a directive and
-    // running out of ngZone
-    fromEvent(document, 'keydown')
-      .pipe(
-        filter((event: Event) => {
-          return (
-            (event as KeyboardEvent).key === 'k' &&
-            (event as KeyboardEvent).ctrlKey
-          );
-        }),
-        tap((event) => {
-          event.preventDefault();
-          this.searchComponent()?.focuInputElement();
-        }),
-        takeUntilDestroyed(),
-      )
-      .subscribe();
   }
 }

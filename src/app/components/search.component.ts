@@ -15,6 +15,8 @@ import {
 import { FormControl, FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { PokemonStore } from '../pokemon.store';
 import { Router } from '@angular/router';
+import { filter, fromEvent, tap } from 'rxjs';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-search',
@@ -58,7 +60,7 @@ import { Router } from '@angular/router';
             'rounded-t-lg': isResultsVisible(),
             'rounded-lg': !isResultsVisible()
           }"
-          class="block w-full p-4 ps-10 text-sm border rounded-t-lg bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
+          class="block w-full p-2.5 ps-10 text-sm border rounded-t-lg bg-gray-700 border-gray-600 placeholder-gray-400 text-white focus:ring-blue-500 focus:border-blue-500"
           placeholder="Search for a Pokémon"
         />
         <button
@@ -111,6 +113,23 @@ export class Search {
     this.pokemonStore.filterPokemonSearchResults(
       this.searchValueCtrl.valueChanges,
     );
+
+    // consider out of ngZone
+    fromEvent(document, 'keydown')
+      .pipe(
+        filter((event: Event) => {
+          return (
+            (event as KeyboardEvent).key === 'k' &&
+            (event as KeyboardEvent).ctrlKey
+          );
+        }),
+        tap((event) => {
+          event.preventDefault();
+          this.focuInputElement();
+        }),
+        takeUntilDestroyed(),
+      )
+      .subscribe();
   }
 
   focuInputElement(): void {
@@ -202,7 +221,18 @@ export class Search {
       return;
     }
 
-    if (e instanceof KeyboardEvent && e.key && !this.isResultsVisible()) {
+    if (e instanceof KeyboardEvent && e.key === 'Tab') {
+      this.isResultsVisible.update(() => false);
+      return;
+    }
+
+    const isLetterKeyCode =
+      (e as KeyboardEvent).key >= 'A' && (e as KeyboardEvent).key <= 'Z';
+    if (
+      e instanceof KeyboardEvent &&
+      isLetterKeyCode &&
+      !this.isResultsVisible()
+    ) {
       this.isResultsVisible.update(() => true);
     }
   }
