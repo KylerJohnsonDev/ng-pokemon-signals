@@ -1,16 +1,17 @@
 import { Component, inject } from '@angular/core';
-import { authStore } from '../auth.store';
+
 import { AvatarComponent } from './avatar.component';
-import { RouterModule } from '@angular/router';
 import { NgOptimizedImage } from '@angular/common';
+import { RouterModule } from '@angular/router';
 import { Search } from './search.component';
+import { authStore } from '../auth.store';
 
 @Component({
   selector: 'app-navbar',
   standalone: true,
   imports: [AvatarComponent, RouterModule, NgOptimizedImage, Search],
   template: `
-    <nav class="bg-gray-900">
+    <nav class="bg-gray-800 absolute w-full">
       <div class="flex flex-wrap items-center justify-between mx-auto p-4">
         <a
           routerLink="/"
@@ -56,19 +57,19 @@ import { Search } from './search.component';
             />
           </svg>
         </button>
-        <div class="hidden w-full md:block md:w-auto" id="navbar-default">
+        <div
+          class="hidden w-full md:block md:w-auto bg-gray-900 md:bg-gray-800 relative"
+          id="navbar-default"
+        >
           <ul
-            class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-700 rounded-lg bg-gray-800 md:bg-gray-900 md:flex-row md:items-center md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
+            class="font-medium flex flex-col p-4 md:p-0 mt-4 border border-gray-700 rounded-lg bg-gray-900 md:bg-gray-800 md:flex-row md:items-center md:space-x-8 rtl:space-x-reverse md:mt-0 md:border-0"
           >
-            <li>
-              <app-search class="lg:hidden grow" />
-            </li>
             <li>
               <a
                 routerLink="/pokemon"
                 routerLinkActive="bg-blue-500 md:bg-transparent md:text-blue-500"
                 [routerLinkActiveOptions]="{ exact: true }"
-                class="block py-2 px-3 text-white text-white rounded md:bg-transparent md:p-0"
+                class="block py-2 px-3 text-white rounded md:bg-transparent md:p-0"
                 aria-current="page"
                 >Browse</a
               >
